@@ -1,0 +1,1403 @@
+/*importing google fonts */
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;  
+    font-family: "Lato", serif;
+}
+
+/* General Reset */
+body{
+    height: 100%;
+    background: #1a2f4b;
+    margin: 0; /* Ensure no margin on body */
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sidebar Container */
+.sidebar {
+    width: 200px;
+    height: 100vh;
+    background:url('assets/images/Background.png');
+    background-position: left;
+    background-size: cover;
+    color: #fff;
+    position: fixed;
+    top: 0; /* Start at the top of the page */
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s ease-in-out;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    justify-content: space-between;
+    z-index: 1000;
+}
+
+/* Collapsed Sidebar */
+.sidebar.collapsed {
+    width: 80px;
+
+}
+/* Stroke Divider */
+.stroke {
+    height: 2px;
+    width: 95%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+    position: relative;
+    margin-bottom: 10px; /* Spacing below the stroke */
+    margin-left: 10px;
+}
+
+/* Sidebar Toggle Button */
+.toggle-btn {
+    width: 100%;
+    text-align: center;
+    padding: 15px 1px;
+    cursor: pointer;
+  
+}
+.toggle-icon{
+    display: flex; /* Ensures items are aligned in a row */
+    align-items: center; /* Vertically aligns items */
+    justify-content: space-between; /* Positions icon on left and toggle button on right */
+    width: 100%; /* Full width of the container */
+    padding: 10px 20px; /* Padding for some spacing */
+
+}
+
+.toggle-btn ion-icon {
+    font-size: 1.4rem;
+    color: #fff;
+    cursor: pointer;
+    
+}
+
+/* Sidebar Icon */
+.icon img {
+    width: 140px; /* Consistent size */
+    height: 50px;
+    object-fit: contain;   
+    cursor: pointer;
+    margin-left: -10px;
+    margin-right: 10px;
+}
+
+/* Sidebar Menu */
+.menu {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Full height of the sidebar */
+    justify-content: space-between; 
+    flex: 1;
+}
+
+.menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu ul li {
+    width: 100%; /* Allow the container to expand as needed */
+    display: flex;
+    align-items: center; /* Center-align the content */
+    gap: 12px; /* Increase spacing between the image and the text */
+    padding: 10px; 
+    transition: background 0.3s ease; 
+}
+
+.menu ul li:hover {
+    background: #172e444b;
+    border-radius: 20px;
+
+}
+
+.menu ul li img {
+    border: none;
+    padding: 5px 5px;
+    margin: -2px;
+    width: 27px;
+    height: 27px;
+    border-radius: 50%; /* Keep circular shape */
+    background: rgba(31, 92, 68, 0.397);
+    transition: background 0.3s ease;
+}
+
+.menu ul li:hover img {
+    background: white; /* Change image background to white on hover */
+}
+.menu ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 0.75rem;
+    flex: 1;
+}
+.menu .stroke {
+    height: 2px;
+    width: 95%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+    position: relative;
+    margin-left: 10px;
+}
+
+.logout-section {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 15px;
+}
+
+.text-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); /* Adds depth to the text */
+}
+/* Collapsed Menu Items */
+.sidebar.collapsed {
+    width: 50px; /* Reduced width when collapsed */
+    border-radius: 10px;
+}
+.sidebar.collapsed .menu ul li a {
+    display: none;
+    
+}
+
+.sidebar.collapsed .menu ul li ion-icon {
+    margin-right: 0;
+}
+.sidebar.collapsed .img-back {
+    height: 80px; /* Reduced height */
+}
+
+.sidebar.collapsed .text-overlay {
+    font-size: 0.8rem; /* Smaller text for collapsed sidebar */
+}
+
+.body-container {
+    flex: 1;
+    margin-left: 200px; /* Matches sidebar width */
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.sidebar.collapsed ~ .body-container {
+    margin-left: 80px; /* Adjusted margin for collapsed sidebar */
+}
+
+
+/* Header */
+.header {
+    position: fixed; /* Make the header fixed */
+    top: 0;
+    width: calc(100% - 200px); /* Adjust width to account for the sidebar */
+    background: #1A2F4B; /* Solid background color */
+    color: white;
+    z-index: 999; /* Ensure the header is above other elements */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.header-topbar{
+    display: flex;
+    justify-content: space-between; /* Push items to opposite ends */
+    align-items: center;
+    width: 100%;
+}
+
+/* Search Bar */
+.search-container {
+    position: relative;
+    display: inline-block;
+    width: 250px;
+    
+}
+.search-bar {
+    padding: 6px 15px 8px 35px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    width: 250px;
+    outline: none;
+    transition: background 0.3s;
+    background: rgba(31, 92, 68, 0.397);
+    border: none; /* Remove any border from the search bar */
+}
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    color: #fff;
+}
+.search-bar:focus {
+    outline: none; /* Ensure no outline on focus */
+    background: rgba(31, 92, 68, 0.5);
+}
+
+/* Icons */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.icons img {
+    border: none; /* Remove any border */
+    padding: 6px;
+    width: 27px;
+    height: 27px;
+    gap: 10px;
+    border-radius: 50%; /* Circular shape */
+    background: rgba(31, 92, 68, 0.397);
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.icons img:hover {
+    color: #9FBAD9;
+    transform: scale(1.1);
+}
+/* Signup Button */
+.signup-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Space between text and arrow */
+    padding: 8px 15px;
+    border: none;
+    border-radius: 15px;
+    background: #fff;
+    color: #1A2F4B;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.signup-btn:hover {
+    background: linear-gradient(135deg, #70c172, #234737);
+    transform: scale(1.05);
+}
+
+.arrow-icon {
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+    color: rgba(31, 92, 68, 0.397);
+}
+
+.signup-btn:hover .arrow-icon {
+    transform: translateX(5px); /* Moves arrow slightly to the right on hover */
+}
+/* Welcome Message */
+.header-topbar h1 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.header-top h3 {
+    margin: 0;
+    font-size: 0.75rem;
+    margin-bottom: -5px;
+    font-weight: 300;
+}
+/* Header Title */
+.header h1 {
+    margin: 0;
+    font-size: 1rem;
+    flex: 1;
+}
+.highlight {
+    color: #70c172; /* Green for 'Ultimate Sports Hub' */
+}
+
+/* Horizontal Line */
+.header-line {
+    margin-top: 10px;
+    height: 1px;
+    background: #fff;
+}
+
+
+/* Content Section */
+.content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch; /* Ensure layers fill the height */
+    padding: 20px;
+    gap: 10px;
+    margin-top: 80px;
+    height: calc(100vh - 150px);
+    background: #1A2F4B;
+}
+
+/* Layers */
+.layer {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 10px;
+}
+
+
+/* Layers 1*/
+.text-cont{
+    display: flex;
+    padding-bottom: 15px;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.live-matches {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.see-more {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between icon and text */
+    color: #fff;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+.see-more ion-icon {
+    font-size: 1rem;
+}
+
+/* Live Match Demo */
+.live-match-demo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: #70c17123;
+    color: white;
+    width: 100%;
+    position: relative;
+    margin-bottom: 50px;
+    padding: 8px;
+    border-radius: 15px;
+    border: 1px solid #ffc107;
+
+}
+.league-name {
+    font-size: 0.60rem;
+    font-weight: 300;
+ 
+}
+.live-match-event{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+.score {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #70c172;
+    padding: 2px;
+
+}
+.teams-time {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+    padding: 8px;
+    margin-left: -5px;
+}
+
+.team {
+    flex: 1;
+    text-align: center;
+    font-size: 0.70rem;
+    word-break: keep-all;
+    overflow: hidden;
+    white-space: nowrap;
+  
+}
+
+.team img{
+    width: 37px;
+    height: 37px;
+    border-radius: 50%; /* Ensure the image is fully circular */
+    object-fit: cover; /* Maintain the aspect ratio inside the circular shape */
+    display: block; /* Prevent inline spacing issues */
+    margin: 0 auto; /* Center the image horizontally */
+    padding-bottom: 5px;
+ }
+.time {
+    font-size: 0.7rem;
+    font-weight: 300;
+    color: white;
+}
+.time img{
+   width: 7px;
+   height: 7px;
+}
+
+/* League Table Container */
+.league-table-demo {
+    background:url('assets/images/Background.png');
+    background-position: right;
+    background-repeat: no-repeat;
+    background-size: center;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: white;
+    width: 100%;
+    height: 223px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    display: flex;
+    padding: 10px 12px;
+    flex-direction: column;   
+   
+}
+
+
+/* League Title */
+.league-title {
+    font-size: 0.75rem;
+    float: left;
+    color: #fff;
+    padding-top: 10px;
+    margin-bottom: 10px;
+}
+
+/* Table Header and Rows as Grid */
+.table-header,
+.team-row {
+    display: grid;
+    grid-template-columns: 4fr repeat(5, 1fr); /* Adjust column sizes */
+    gap: 0;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 8px;
+}
+
+
+/* Team Info */
+.team-info {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow: hidden;
+}
+
+/* Team Logo */
+.team-info img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50px;
+}
+.table-header .team-name {
+    font-weight: 400;
+}
+/* Team Name */
+.team-info .team-name {
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+    font-weight: 400; 
+}
+
+
+/* Highlight Row on Hover */
+.team-row:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+/* Stats Header and Team Stats (Aligned in Columns) */
+.team-stats {
+    text-align: center;
+    font-size: 0.70rem;
+    font-weight: 400;
+}
+
+/* Stats Header */
+.stats-header {
+    font-weight: 400;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #fff;
+    text-align: center;
+}
+
+.news-update{
+    align-items: center;
+    background: #1b364e83;
+    border-radius: 15px;
+    border: 0.5px;
+    color: white;
+    max-width: 800px;
+    padding-bottom: 8px;
+    padding: 10px;
+    
+}
+/* News Container */
+.news-container {
+    display: flex;
+    overflow: hidden;
+    padding: 5px;
+    align-items: center;
+  
+    
+}
+.news-image img {
+    width: 110px; /* Adjusted width for a more reasonable size */
+    height: 58px; /* Maintains aspect ratio */
+    object-fit: cover;
+    border-radius: 10px; /* Rounded corners only on the left */
+    margin-bottom: 10px;
+}
+/* News Info */
+.news-info {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+}
+
+/* Headline */
+.news-headline {
+    font-size: 0.8rem; /* Adjust the font size */
+    margin-top: -20px;
+    color: #FFFFFF;
+    font-weight: 400;
+    line-height: 1.5; /* Adjust the spacing between lines */
+    overflow: hidden; /* Ensures text doesn't overflow its container */
+    display: -webkit-box; /* Enables the multi-line truncation */
+    -webkit-line-clamp: 3; /* Limits text to 3 lines */
+    -webkit-box-orient: vertical; /* Ensures text is vertically oriented */
+    text-overflow: ellipsis; /* Adds ellipsis at the end if text overflows */
+    white-space: normal; /* Allows wrapping for multi-line text */
+}
+
+/* Middle Layer */
+.middle-layer {
+    flex: 2; /* Wider than other layers */
+    position: relative;
+    width: 100%;
+    height: 100%; /* Adjust based on your layout needs */
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-slider {
+    display: flex;
+    width: 100%;
+    overflow: hidden; /* Prevent content from overflowing */
+    position: relative;
+    height: 210px; /* Match the height of content */
+  }
+/* Individual Slide */
+.slider-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 0 0 100%; /* Each slide takes 100% width */
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #244537;
+    color: white;
+    transition: transform 0.5s ease; /* Smooth sliding transition */
+  }
+.item-contnt {
+    flex: 1;
+    color: #fff;
+    padding-top: 50px;
+}
+
+.slider-title {
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+
+.slider-time,
+.slider-date,
+.slider-country {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    font-size: 0.7rem;
+}
+
+/* Adjustments for Time, Date, and Country Rows */
+.slider-time ion-icon,
+.slider-date ion-icon,
+.slider-country ion-icon {
+    margin-right: 5px;
+    color: #fbc02d;
+}
+
+.sliderImage-container img {
+    height: 120%
+}
+.advert .cont-img {
+    height: 120%  
+}
+
+.slider-button {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    color: #244537;
+    text-decoration: none;
+    padding: 5px 20px;
+    border-radius: 10px;
+    margin-top: 15px;
+    width: 150px;
+}
+
+.slider-button ion-icon {
+    margin-right: 5px;
+}
+/* Advert Banner Styling */
+.advert {
+    background: #003366;
+    color: #fff;
+}
+
+
+
+
+
+/* News Podcast Container */
+.news-podcast {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+    padding-top: 20px;
+}
+
+.top-stories {
+    flex: 1; /* Make both child containers take up equal width */
+    display: flex; /* Maintain flexibility for internal layout */
+    flex-direction: column; /* Ensure content inside stacks properly */
+    padding: 10px; /* Optional: Add padding for better spacing */
+    border-radius: 10px; /* Optional: Rounded corners for a neat look */
+    margin-top: -10px;
+   
+}
+
+.stories-container {
+    display: flex;
+    flex-direction: row; /* Keep the direction row-based */
+    justify-content: flex-start; /* Aligns items to the start of the container */
+    align-items: flex-start; /* Ensures top alignment of wrapped rows */
+    gap: 10px; /* Space between items */
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: #14273f;
+    
+}
+
+
+/* General Styling for Images */
+.feature-image img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover; /* Ensures proper scaling */
+    border-radius: 5px;
+}
+.podcast-container {
+    background: #14273f;
+    border-radius: 10px;
+    padding: 10px;
+    
+}
+
+.podcast-container h2{
+    color: #fff;
+    margin-top: 20px;
+}
+.podcast-img img{
+    width: 100%;
+    height: 120px;
+    object-fit: cover; /* Ensures proper scaling */
+    border-radius: 5px; 
+}
+
+/* News Header */
+.news-header {
+    color: #fff;
+    font-size: 0.7em;
+    font-weight: bold;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 5px;
+}
+/* News Description */
+.news-description {
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 400;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+.top-story {
+    font-size: 0.75rem;
+    color: #fff;
+    font-weight: bold;
+}
+.see-more p {
+    font-size: 0.75rem;
+    font-weight: 300;
+}
+
+.latest-match {
+    padding-top: 20px;
+    width: 100%;
+    height: 100%;
+}
+
+.match-latest {
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #1f3750; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.match-header {
+    display: flex;
+    justify-content: space-between; /* Positions the left and right groups apart */
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px; 
+}
+
+.match-header .category-btn {
+    cursor: pointer;
+    padding: 4px 18px;
+    background-color: #234766a9;
+    color: white;
+    border-radius: 20px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    gap: 5px;
+}
+
+.match-header .category-btn.calendar {
+    margin-left: auto; /* Pushes the calendar button to the far right */
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#match-date {
+    display: block;
+    background: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
+}
+
+#match-date:hover {
+    border: 1px solid #244537;
+}
+
+#match-date::-webkit-calendar-picker-indicator {
+    color: #244537;
+    cursor: pointer;
+}
+.category-btn.calendar:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+}
+
+.category-btn.active {
+    background-color: #fff;
+    color: #2e5c4e;
+    border-radius: 20px;
+}
+
+.calendar ion-icon {
+    font-size: 1rem;
+}
+.matches-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+#match-date {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    cursor: pointer;
+}
+
+#match-date:focus {
+    opacity: 1;
+}
+.match-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #11293C;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.match-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.match-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+/* Team Names */
+.team-names {
+    font-size: 0.80rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 5px; /* Add space between "team1" and "vs team2" */
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-left: -10px;
+}
+
+.match-time {
+    font-size: 0.8rem;
+}
+
+.match-country {
+    font-size: 0.8rem;
+    color: #fff;
+}
+
+.view-details-btn {
+    background-color: #fff;
+    color: #1a2f4b;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.75rem;
+}
+
+.view-details-btn:hover {
+    background-color: #fbc02d;
+}
+
+.team-logo img {
+    width: 20px; /* Reduce the size of logos */
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover; /* Ensure logos maintain their aspect ratio */
+}
+
+
+/*third layers*/
+.third-layer {
+    position: relative;
+    width: 100%;
+    height: 100%; /* Adjust as needed */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column; /* Ensure content stacks vertically */
+    gap: 15px; /* Adds spacing between child elements */
+}
+/* Top Scorer Section */
+
+
+.slider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 150px;
+    background-color: #244537; 
+    border-radius: 10px;
+}
+
+/* Player Image */
+.player-image img {
+    height: 120px;
+    width: 130px; /* Adjust size as needed */
+    object-fit: cover; /* Ensures the image maintains aspect ratio */
+    border-radius: 50%; /* Makes the image circular */
+    margin-left: -20px;
+}
+
+/* Player Item */
+.player-item {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 400px;
+    background: #244537;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease, visibility 1s ease;
+}
+.player-item.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Player Data */
+.players-data {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Spacing between player details */
+}
+
+.player-name {
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-top: -10px;
+    color: #fff;
+}
+.goals,
+.team-name,
+.leagues {
+    font-size: 0.70rem;
+    color: #ffffff; /* White text for other details */
+    font-weight: 350;
+}
+.player-item.player-1 .player-image {
+    animation: slideInLeft 1s forwards;
+}
+
+.player-item.player-1 .players-data {
+    animation: slideInRight 1s forwards;
+}
+
+.player-item.player-2 .player-image {
+    animation: slideInTop 1s forwards;
+}
+
+.player-item.player-2 .players-data {
+    animation: slideInRight 1s forwards;
+}
+
+.player-item.player-3 .player-image {
+    animation: slideInRight 1s forwards;
+}
+
+.player-item.player-3 .players-data {
+    animation: slideInBottom 1s forwards;
+}
+
+/* Keyframes for animations */
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInTop {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInBottom {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.swiper-pagination {
+    position: absolute;
+    bottom: 10px;
+    text-align: center;
+    width: 100%;
+    color: #fff;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+    color: #fff;
+}
+
+.advertisement img {
+    height: 100%;
+    width: 100%;
+    margin-top: 10px;
+}
+
+/*prdition styling*/
+
+.predition-container {
+    display: flex;
+    align-items: center; /* Vertically centers content */
+    background: #fff; /* Semi-transparent background */
+    color: black;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    gap: 10px; /* Adds spacing between the player image and data */
+    margin-top: -18px;
+   
+}
+
+.predition-content h3{
+    font-size: 1rem;
+    padding-left: 5px;
+    padding-top: 10px;
+    margin-bottom: 10px;
+}
+.predit-selection {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    padding: 10px;
+    text-align: center;
+}
+.team-nam {
+    font-size: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: bold;
+    gap: 5px;
+    white-space: nowrap; /* Prevent line breaks */
+    text-align: center;
+}
+.Select-team {
+    font-size: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 500;
+    gap: 5px;
+    white-space: nowrap; /* Prevent line breaks */
+    text-align: center;
+}
+/* Team Logo */
+.team-logo img {
+    width: 40px; /* Logo width */
+    height: 40px; /* Logo height */
+    object-fit: contain; /* Maintain aspect ratio */
+    border-radius: 50%; /* Circular logo */  
+    margin-left: -5px;
+    margin-top: -5px;
+}
+
+/* Score Input */
+.score-input {
+    padding: 5px 5px;
+    border: 1px solid #ffc107;
+    border-radius: 5px;
+    font-size: 1rem;
+    text-align: center;
+    outline: none;
+    width: 60px; /* Adjust as needed */
+    gap: 10px;
+    margin-left: 10px;
+}
+
+.score-input:focus {
+    border-color: #ff8c00;
+    box-shadow: 0 0 5px rgba(255, 140, 0, 0.8);
+}
+
+
+
+
+
+
+
+/*------------------------------News css------------------------------------ */
+
+/*top stories */
+.top-story {
+    flex: 1; /* Make both child containers take up equal width */
+    display: flex; /* Maintain flexibility for internal layout */
+    flex-direction: column; /* Ensure content inside stacks properly */
+    padding: 10px; /* Optional: Add padding for better spacing */
+    border-radius: 10px; /* Optional: Rounded corners for a neat look */
+    margin-top: -10px;
+}
+
+.news-infomat {
+    display: flex;
+    flex-direction: row; /* Keep the direction row-based */
+    justify-content: flex-start; /* Aligns items to the start of the container */
+    align-items: flex-start; /* Ensures top alignment of wrapped rows */
+    gap: 10px; /* Space between items */
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: #14273f;
+}
+
+.news-messages {
+    padding-left: 5px;
+    margin-top: -5px;
+}
+.news-messages h2{
+    font-size: 0.75rem;
+    margin-bottom: 10px;  
+}
+
+.news-messages p {
+    font-weight: normal;
+    font-size: 0.6rem;
+}
+
+.feature-img img {
+    width: 100px;
+    height: 70px;
+    object-fit: cover; /* Ensures proper scaling */
+    border-radius: 5px;
+}
+.news-headers {
+    font-size: 0.80rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.see-more {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.see-more ion-icon {
+    font-size: 1rem;
+}
+
+/* Style for the news meta information */
+.news-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.news-meta .news-description {
+    flex: 4;
+    font-size: 0.65rem;
+    line-height: 1.3;
+    margin: 0;
+    color: #ccc;
+    word-wrap: break-word;
+    
+}
+
+.news-time {
+    flex: 1;
+    text-align: right;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #70c172;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+#news-details-view {
+    display: none;
+    margin-top: 20px;
+    padding: 10px;
+    width: 100%;
+}
+
+#news-detail-content img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+#back-button {
+    cursor: pointer;
+    margin-bottom: 20px;
+    display: inline-flex;  /* Ensures the button is inline-flex for aligning the text and icon */
+    align-items: center;   /* Aligns icon and text vertically */
+    border: none;          /* Remove border */
+    background: none;      /* Remove background color */
+    color: #333;           /* Adjust text color */
+    font-size: 16px;
+    padding: 10px;
+}
+
+#back-button .search-icon {
+    margin-right: 8px; /* Space between arrow and text */
+}
+
+#back-button:hover {
+    color: #70c172; /* Optional: Change text color on hover */
+}
+
+#news-detail-content {
+    color: #fff;
+}
+
+#news-detail-content h2 {
+    font-size: 1.2rem;
+}
+
+#news-detail-content p {
+    font-size: 0.75rem;
+}
+
+
+
+
+
+
+/*podcast */
+
+.podcast-container1 {
+    background: #14273f;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+}
+
+
+.podcast-container1 h2{
+    color: #fff;
+    margin-top: 20px;
+}
+.podcast-imag img{
+    width: 100%;
+    height: 120px;
+    object-fit: cover; /* Ensures proper scaling */
+    border-radius: 5px; 
+}
+
+
+
+
+
+/*---------------------league page css ---------------------------*/
+.league-table {
+    width: 100%;
+    padding: 10px;
+}
+
+.league-table .league-name {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px;
+    
+}
+.league-tables-demo {
+    background-color: blue;
+    border: 1px solid #fbc02d;
+    border-radius: 15px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.league-tables-demo .team-name {
+    font-size: 0.85rem;
+}
+
+.league-tables-demo .team-row .team-stats {
+    color: #fff;
+    font-size: 0.80rem;
+}
+
+
+/*...middle layers..... */
+.live-match {
+    background-color: #1a2f4b;
+    border: #fbc02d;
+    border-radius: 20px;
+    padding: 10px;
+
+}
+.live-match .live-match-demo {
+    margin-bottom: 15px;
+    background:url('assets/images/Background.png');
+    background-size: cover;
+    background-position: right;
+
+}
