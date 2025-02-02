@@ -11,7 +11,7 @@
 /* General Reset */
 body{
     height: 100%;
-    background: #1a2f4b;
+    background: #0A131F;
     margin: 0; /* Ensure no margin on body */
     padding: 0;
     display: flex;
@@ -22,7 +22,7 @@ body{
 .sidebar {
     width: 200px;
     height: 100vh;
-    background:url('assets/images/Background.png');
+    background: url("assets/images/Backgroundcolor.png");
     background-position: left;
     background-size: cover;
     color: #fff;
@@ -206,7 +206,7 @@ body{
     position: fixed; /* Make the header fixed */
     top: 0;
     width: calc(100% - 200px); /* Adjust width to account for the sidebar */
-    background: #1A2F4B; /* Solid background color */
+    background: #0A131F; /* Solid background color */
     color: white;
     z-index: 999; /* Ensure the header is above other elements */
     padding: 20px;
@@ -344,7 +344,7 @@ body{
     gap: 10px;
     margin-top: 80px;
     height: calc(100vh - 150px);
-    background: #1A2F4B;
+    background: #0A131F;
 }
 
 /* Layers */
@@ -400,7 +400,7 @@ body{
     margin-bottom: 50px;
     padding: 8px;
     border-radius: 15px;
-    border: 1px solid #ffc107;
+    border: 1px solid #fbc02d;
 
 }
 .league-name {
@@ -1245,6 +1245,14 @@ body{
     font-size: 1rem;
 }
 
+#news-details-view p {
+    color: #fff;
+}
+
+#news-details-view ion-icon {
+    color: #fff;
+}
+
 .see-more ion-icon {
     font-size: 1rem;
 }
@@ -1324,9 +1332,42 @@ body{
     font-size: 0.75rem;
 }
 
+.live-games {
+    background-color: #1a2f4b;
+    border: 1px solid #ffc107;
+    width: 100%;
+   padding: 10px;
+   border-radius: 15px;
+    
+}
 
+.live-matches-demo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    color: white;
+    width: 100%;
+    position: relative;
+    padding: 8px;
+    
+    
 
+}
 
+.team-times {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+    padding: 15px;
+    background: url("assets/images/Backgroundcolor.png");
+    background-size: cover;
+    background-position: center;
+    border-radius: 15px;
+
+}
 
 
 /*podcast */
@@ -1355,49 +1396,902 @@ body{
 
 
 
-/*---------------------league page css ---------------------------*/
-.league-table {
+/*---------------------league names page css ---------------------------*/
+
+.leagues-country {
     width: 100%;
     padding: 10px;
-}
+    margin-top: -30px;
+    margin-bottom: 20px;
+    background-color: #1f3750;
+    border-radius: 10px;
 
-.league-table .league-name {
+}
+.leagueNames {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
     color: #fff;
-    font-size: 1rem;
-    font-weight: bold;
     padding: 10px;
+  
+  }
+
+  .league-info h3 {
+    font-size: 0.80rem;
+  }
+  
+  .league-info p {
+    font-size: 0.60rem;
+    font-weight: 300;
+  }
+
+
+  .table-headers,
+  .team-rows {
+    display: grid;
+    grid-template-columns: 2fr 3fr repeat(5, 1fr);
+    gap: 0px;
+    align-items: center;
+  }
+  
+.table-headers {
+    font-weight: bold;
+    color: #fff;
     
 }
-.league-tables-demo {
-    background-color: blue;
-    border: 1px solid #fbc02d;
-    border-radius: 15px;
-    padding: 15px;
-    margin-top: 10px;
-}
 
-.league-tables-demo .team-name {
-    font-size: 0.85rem;
-}
-
-.league-tables-demo .team-row .team-stats {
+/* Row styles */
+.team-rows {
+    background-color: #1f3750; /* Background color for rows */
     color: #fff;
-    font-size: 0.80rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    padding: 8px 10px;
+
+}
+/* Image and text alignment */
+.team-info {
+    display: flex;
+    align-items: center; /* Align text and image */
+    gap: 8px; /* Space between image and text */
 }
 
+.team-info img {
+    width: 20px; /* Adjust logo size */
+    height: 20px;
+}
 
-/*...middle layers..... */
-.live-match {
-    background-color: #1a2f4b;
-    border: #fbc02d;
+/* Stats alignment */
+.stats-header, 
+.team-stat {
+  text-align: right; /* Align to the extreme right */
+  font-size: 0.9rem; /* Consistent font size */
+  white-space: nowrap;
+}
+  .team-rows img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .stats-header {
+    padding-right: 5px; /* Slight padding for header alignment */
+  }
+  
+   .team-stat {
+    color: #fff;
+    font-size: 0.7rem;
+    padding-right: 5px;
+  }
+
+  .arrow-direct {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between icon and text */
+    color: #fff;
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+
+  .arrow-direct img{
+    font-size: 0.60rem;
+}
+ 
+.league-table {
+    width: 100%;
     border-radius: 20px;
+    padding-top: 10px;
+}
+.league-tables-details {
+    background-color: #1f4275;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px; 
+}
+
+.league-headers {
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+ 
+}
+
+.league-headers img {
+   width: 20px;
+   height: 20px;
+   object-fit: contain;
+   }
+
+
+.league-headers .league-details h3 {
+    font-size: 0.85rem;
+    font-weight: bold;
+   
+  }
+
+  .league-headers .league-details p {
+   font-size: 0.60rem;
+   font-weight: 300;
+   margin-top: 2px;
+  
+ }
+.league-details {
+    margin-left: 8px;
+}
+
+.leag-count {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+.leag-count img {
+    width: 20px;
+    height: 20px;
+   object-fit: contain;
+}
+
+.position-header,
+.team-position {
+    font-size: 0.7rem;
+    font-weight: 300;
+    padding: 5px;
+}
+
+
+.advertisement img {
+    padding: 15px;
+}
+
+
+
+
+
+
+
+/*..................................................line match page........................*/
+
+.matches-header {
+    display: flex;
+    justify-content: space-between; /* Positions the left and right groups apart */
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+  }
+  .match-category-btn {
+    color: #fff;
+    border-radius: 20px;
+    padding: 4px 18px;
+    background-color: #234766a9;
+    cursor: pointer;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    gap: 5px;
+} 
+
+
+.match-category-btn.calendar {
+    margin-left: auto; /* Pushes the calendar button to the far right */
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+
+.matches {
+    background-color: #1A2F4B;
+    padding: 20px;
+    width: 100%;
+    border-radius: 10px;
+}
+.matches-live-ongoing {
+    width: 100%;
     padding: 10px;
+    margin-top: -30px;
+    margin-bottom: 20px;
+    background-color: #1b364e;
+    border-radius: 10px;
 
 }
-.live-match .live-match-demo {
-    margin-bottom: 15px;
-    background:url('assets/images/Background.png');
-    background-size: cover;
-    background-position: right;
 
+.leagues-matches {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    color: #fff;
+    padding: 10px;
+}
+
+.league-header {
+    display: flex;
+    align-items: center; /* Align text and image vertically */
+    gap: 10px; /* Add spacing between the image and text */
+    color: white; /* Set text color to white */
+    font-size: 0.75rem; /* Adjust font size for the header */
+    margin-bottom: 8px; 
+  }
+
+  .league-header img.league-logo {
+    width: 30px; /* Adjust the logo size */
+    height: 30px;
+    object-fit: contain; /* Ensure the logo maintains its aspect ratio */
+    border-radius: 50%; /* Optional: Make the logo circular */
+  }
+
+.leag-country {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+.leag-country img {
+    width: 20px;
+    height: 20px;
+   object-fit: contain;
+}
+
+
+.matches-item {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background-color: #1f3750;
+    color: #fff;
+    border-radius: 8px;
+    margin-bottom: 10px;
+
+
+  }
+  
+  .matches-time {
+    font-weight: 400;
+    font-size: 0.70rem;
+    margin-bottom: 8px;
+
+  }
+  
+  .matches-teams {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+  }
+
+
+  .matches-team {
+    display: flex;
+    align-items: center; /* Ensures logo and name are horizontally aligned */
+    gap: 8px;
+    font-size: 0.65rem;
+  }
+
+ .matches-team img {
+    width: 17px; /* Reduce the size of logos */
+    height: 17px;
+    border-radius: 50%;
+    object-fit: cover; /* Ensure logos maintain their aspect ratio */
+ }
+ .matches-team span {
+    font-size: 0.7rem;
+  }
+
+
+  .score {
+    font-size: 0.70rem;
+    color: #fff;
+  }
+
+  .matches-datas {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 5px;
+    
+  }
+
+
+  .live-match {
+    text-align: center;
+    color: white;
+    width: 100%;
+  }
+  
+  .back-btn {
+    background-color: #ff4500;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  
+  .back-btn:hover {
+    background-color: #e03e00;
+  }
+
+  .matches-team {
+    flex: 1;
+    text-align: center;
+    font-size: 0.70rem;
+    word-break: keep-all;
+    overflow: hidden;
+    white-space: nowrap;
+
+  }
+
+  .live-match-team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .live-match-team span {
+    font-size: 0.75rem;
+  }
+
+  .match-time-scores span {
+    font-size: 0.7rem;
+  }
+
+  .live-match-team img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+  }
+ .live-match-datas {
+     display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  background-color: #11293C;
+  padding: 20px;
+ border-radius: 10px;
+ }
+
+ .match-time-scores {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+ .scores {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 2px;
+
+}
+
+.live-match-time {
+    font-size: 14px;
+    color: lightgray;
+  }
+  
+
+.live-match-scores {
+    display: flex;
+    flex-direction: column;
+}
+
+.league-name {
+    font-size: 0.75rem;
+    font-weight: 300;
+ 
+  }
+  
+  .live-match-info {
+    margin-top: 20px;
+    background: #222;
+    padding: 15px;
+    border-radius: 10px;
+    color: white;
+  }
+  
+  .match-tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+  }
+  
+  .tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .tab-btn.active {
+    border-bottom: 2px solid yellow;
+  }
+  
+  #tab-content {
+    display: block;  /* Ensure it's visible */
+    min-height: 100px; /* Prevent collapsing */
+    padding: 10px;
+    border-radius: 5px;
+}
+
+  .tab-content.active {
+    display: block;
+  }
+  
+  .lineups-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .team-lineup {
+    width: 45%;
+  }
+  
+  .team-lineup h4 {
+    text-align: center;
+    margin-bottom: 5px;
+  }
+  
+  .team-lineup ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .team-lineup li {
+    background: #333;
+    padding: 5px;
+    margin-bottom: 5px;
+    text-align: center;
+  }
+
+  .field {
+    display: flex;
+    justify-content: space-between;
+    background: green;
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+}
+
+.team {
+    width: 45%;
+}
+
+.formation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.player {
+    background: white;
+    color: black;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+  
+
+
+
+
+
+
+
+
+
+
+/*.....................................predition page css............................*/
+
+
+.predictions-container {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+    border-radius: 10px;
+}
+.match-preditions {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #1A2F4B;
+    color: #fff;
+    gap: 10px;
+    margin-bottom: 10px
+}
+.match-league-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.predit-league-logo {
+    width: 18px;
+    height: 18px;
+}
+.match-teams-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  
+}
+.predit-info-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+    background-color: #0A131F;
+    box-shadow: #003366;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.match-teams-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 5px;
+    
+}
+
+.team-predit {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.team-predit img{
+    width: 18px;
+    height: 18px;
+    object-fit: cover;
+}
+.predit-match-details {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.team-predit span {
+   font-size: 0.75rem;
+}
+
+.score-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 50px;
+    padding: 3px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 3px;
+    border: none;
+    font-size: 0.7rem;
+    margin-left: auto;
+}
+
+
+.prediction-info {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
+
+.prediction-info div {
+    display: flex;
+    justify-content: space-between;
+}
+
+.submit-button {
+    padding: 0 8px;
+    background: white;
+    color: #0A131F;
+    cursor: pointer;
+    text-align: center; 
+    border-radius: 20px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    margin-left: auto;
+    font-size: 0.7rem;
+}
+
+.submit-button img {
+    padding-top: -2px;
+}
+.team-win-name {
+    font-size: 0.75rem;
+}
+
+.error-message {
+    color: red;
+    display: none;
+}
+
+.scores-input input {
+    text-align: center; /* Centers input text */
+    font-size: 20px; 
+    font-weight: 500;
+    font-size: 1rem;
+    width: 55px; /* Adjust width */
+    height: 25px;
+    padding: 8px;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+}
+
+
+.score-stroke {
+    margin-top: 10px;
+    height: 1px;
+    background: #fff;
+ 
+}
+
+/* Center align placeholder */
+.scores-input input::placeholder {
+    text-align: center;
+    font-size: 15px;
+    color: #999;
+}
+
+.date-times {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 300;
+}
+
+.predit-amount {
+    color: #70c172;
+}
+.confirmation-popup {
+    display: none;
+    justify-content: space-between;
+    position: fixed;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    width: 300px;
+    border-radius: 10px;
+}
+
+
+
+.confirmation-header {
+    font-size: 18px;
+    font-weight: 500;
+    justify-content: space-between;
+    font-size: 0.65rem;
+}
+
+.cancel-btn {
+    color: #0A131F;
+    background: #fff;
+}
+
+.cross-icon {
+    width: 16px;
+    height: 16px;
+    background-color: #fff;
+    border: none;
+}
+
+.predit-league-info {
+    font-size: 14px;
+    font-weight: bold;
+    font-size: 0.75rem;
+
+}
+
+.predit-match-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.predit-teams-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+}
+
+.team-prediting {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.team-prediting-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.team-prediting-name {
+    font-size: 14px;
+    font-weight: bold;
+    font-weight: 500;
+}
+
+.vs-time {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+.vs {
+    color: #70c172;
+}
+.score-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+}
+
+.score-selected {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+.confirmation-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: space-between;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold; 
+    color: #70c172;
+}
+
+.confirmation-buttons button {
+    padding: 5px 10px;
+    cursor: pointer;
+    border: none;
+    color: white;
+    background-color: #0A131F;
+    border-radius: 20px;
+    font-size: 0.7rem;
+}
+
+.submit-btn {
+    background: green;
+}
+
+
+/* Submit button with icon */
+.submit-btn {
+    display: flex;
+    align-items: center; /* Keeps the icon and text aligned */
+    justify-content: center;
+    gap: 8px; /* Space between text and icon */
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* Arrow icon styling */
+.submit-btn img {
+    width: 16px;
+    height: auto;
+}
+
+/* Success popup styling */
+.success-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1A2F4B;
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    z-index: 1000; /* Above the blur */
+}
+
+.success-popup img {
+    width: 50px;
+    margin-bottom: 10px;
+    margin: 10px;
+}
+
+
+.success-popup button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    margin: 10px;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+
+}
+
+.success-content {
+    background-color: #fff;
+    border-radius: 10px;
+    
+}
+
+
+
+/* Add blur effect when a popup appears */
+.blurred::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999; /* Ensures it covers everything */
 }

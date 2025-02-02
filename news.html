@@ -8,7 +8,7 @@
     <!--Linking swipper css-->
  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="style.css">
     
 
 <!--linking link.tss-->
@@ -38,15 +38,15 @@
             </li>
             <li>
                 <img src="assets/icons/VideoCamera.png" alt="Video Camera" class="videoCamera">
-                <a href="#">Live Football</a>
+                <a href="live-matches.html">Live Football</a>
             </li>
             <li>
                 <img src="assets/icons/Microphone.png" alt="Video Camera" class="videoCamera">
-                <a href="#">Podcast</a>
+                <a href="podcast.html">Podcast</a>
             </li>
             <li>
                 <img src="assets/icons/PokerChip.png" alt="Poker Chip" class="pokerChip">
-                <a href="#">Prediction</a>
+                <a href="prediction.html">Prediction</a>
             </li>
             <li>
                 <img src="assets/icons/Microphone.png" alt="Video Camera" class="videoCamera">
@@ -310,10 +310,10 @@
             </div>
                <!-- Detailed News View -->
 <div id="news-details-view" style="display: none;">
-    <button id="back-button" onclick="showNewsList()">
-        <ion-icon name="arrow-back-outline" class="search-icon"></ion-icon> <!-- Backward arrow -->
-        Back
-    </button>
+    <div class="see-more" id="back-button" onclick="showNewsList()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        <p>Back</p>
+    </div>
     <div id="news-detail-content"></div>
 </div>
 
@@ -326,11 +326,11 @@
                     <p>View all</p>
                 </div>
             </div>
-            <div class="live-match">
+            <div class="live-games">
 
                  <!-- live match 1 -->
-                <div class="live-match-demo">
-                    <div class="teams-time">
+                <div class="live-matches-demo">
+                    <div class="team-times">
                         <div class="team">
                             <img src="assets/images/chelsea-logo.png" alt="Chelsea" class="chelsea-logo">
                             Chealse</div>
@@ -348,8 +348,8 @@
                 </div>
                 
                  <!-- live match 2 -->
-                <div class="live-match-demo">
-                    <div class="teams-time">
+                <div class="live-matches-demo">
+                    <div class="team-times">
                         <div class="team">
                             <img src="assets/images/chelsea-logo.png" alt="Chelsea" class="chelsea-logo">
                             Chealse</div>
