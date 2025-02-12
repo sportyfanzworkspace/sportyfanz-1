@@ -386,21 +386,10 @@ leagueNames.forEach((leagueElement) => {
 
 document.addEventListener("DOMContentLoaded", function () {
   const matchesContainer = document.querySelector(".matches");
-  const leagueMatches = document.querySelectorAll(".leagues-matches");
-  const matchesHeader = `
-    <div class="matches-header">
-      <div class="match-category-btn active" onclick="showMatches('live', event)">Live</div>
-      <div class="match-category-btn" onclick="showMatches('highlight', event)">Highlight</div>
-      <div class="match-category-btn" onclick="showMatches('upcoming', event)">Upcoming</div>
-      <div class="match-category-btn calendar">
-        <ion-icon name="calendar-outline" id="calendar-icon"></ion-icon>
-        <input type="date" id="match-date" onchange="filterByDate()" style="display: none;" />
-      </div>
-    </div>
-  `;
 
-  const matchesData = {
+const matchesData = {
 "Premier League": {
+  country: "England",
    live: [
      { 
        time: "45", 
@@ -408,38 +397,38 @@ document.addEventListener("DOMContentLoaded", function () {
          name: "Arsenal", 
          logo: "assets/images/arsenalLogo.png", 
          score: 1,
-         formation: "4-3-2-1",  // Add formation
+         formation: "4-4-2",  // Add formation
          lineup: [
-           { name: "Goalkeeper", position: "GK" },
-           { name: "Defender 1", position: "DEF" },
-           { name: "Defender 2", position: "DEF" },
-           { name: "Defender 3", position: "DEF" },
-           { name: "Defender 4", position: "DEF" },
-           { name: "Midfielder 1", position: "MID" },
-           { name: "Midfielder 2", position: "MID" },
-           { name: "Midfielder 3", position: "MID" },
-           { name: "Attacker 1", position: "FWD" },
-           { name: "Attacker 2", position: "FWD" },
-           { name: "Striker", position: "ST" }
+           { number:"32", name: "Neto", position: "GK" },
+           { number:"20", name: "Jorginho", position: "MID" },
+           { number:"19", name: "Leandro Trossard", position: "MID" },
+           { number:"30", name: "Raheem Sterling", position: "FWD" },
+           { number:"17", name: "Oleksandr Zinchenko", position: "DEF" },
+           { number:"5", name: "Thomas Partey", position: "MID" },
+           { number:"3", name: "Kieran Tierney", position: "DEF" },
+           { number:"8", name: "Martin Odegaard", position: "MID" },
+           { number:"23", name: "Mikel Merino", position: "MID" },
+           { number:"18", name: "Takehiro Tomiyasu", position: "DEF" },
+           { number:"9", name: "Gabriel Jesus", position: "FWD" }
          ]
        }, 
        team2: { 
          name: "Chelsea", 
          logo: "assets/images/chelsea-logo.png", 
          score: 1,
-         formation: "4-2-3-1",
+         formation: "4-3-2",
          lineup: [
-           { name: "Goalkeeper", position: "GK" },
-           { name: "Defender 1", position: "DEF" },
-           { name: "Defender 2", position: "DEF" },
-           { name: "Defender 3", position: "DEF" },
-           { name: "Defender 4", position: "DEF" },
-           { name: "Midfielder 1", position: "MID" },
-           { name: "Midfielder 2", position: "MID" },
-           { name: "Midfielder 3", position: "MID" },
-           { name: "Attacker 1", position: "FWD" },
-           { name: "Attacker 2", position: "FWD" },
-           { name: "Striker", position: "ST" }
+          { number:"13", name: "Marcus Bettinelli", position: "GK" },
+          { number:"4", name: "Tosin Adarabioyo", position: "DEF" },
+          { number:"21", name: "Ben Chilwell", position: "DEF" },
+          { number:"18", name: "Christopher Nkunku", position: "FWD" },
+          { number:"3", name: "Marc Cucurella", position: "DEF" },
+          { number:"2", name: "Axel Disasi", position: "DEF" },
+          { number:"19", name: "Jadon Sancho", position: "FWD" },
+          { number:"14", name: "Joao Felix", position: "FWD" },
+          { number:"22", name: "Kiernan Dewsbury-Hall", position: "MID" },
+          { number:"8", name: "Enzo Fernandez", position: "MID" },
+          { number:"20", name: "Cole Palmer", position: "MID" }
          ]
        },
        video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
@@ -464,6 +453,7 @@ document.addEventListener("DOMContentLoaded", function () {
       ],
     },
     "La Liga": {
+      country: "Spain",
       live: [
         { 
           time: "30'", 
@@ -484,49 +474,71 @@ document.addEventListener("DOMContentLoaded", function () {
 
   
 
-  // Function to render matches for a specific league and category
-  function displayMatches(leagueName = null, category = "live") {
-    const allMatches = leagueName ? { [leagueName]: matchesData[leagueName] } : matchesData;
-    let matchesHTML = matchesHeader;
+// Function to render matches for a specific league and category
+function displayMatches(leagueName = null, category = "live") {
+  const allMatches = leagueName ? { [leagueName]: matchesData[leagueName] } : matchesData;
+  let matchesHTML = ""; // Start with an empty string
 
-    Object.keys(allMatches).forEach((league) => {
+  Object.keys(allMatches).forEach((league) => {
       const leagueCategoryMatches = allMatches[league]?.[category] || [];
+      
       if (leagueCategoryMatches.length) {
-        matchesHTML += `
-         <div class="league-header">
-           <img src="assets/images/${league.toLowerCase().replace(/\s+/g, "-")}-logo.png" alt="${league} Logo" class="league-logo">
-          <h3>${league} - ${category.toUpperCase()}</h3>
-        </div>`;
-        leagueCategoryMatches.forEach((match, index) => {
+          // Move league-header ABOVE matches-header
           matchesHTML += `
-            <div class="matches-item" data-league="${league}" data-index="${index}" data-category="${category}">
-              <div class="matches-teams">
-                <div class="matches-time">${match.time}</div>
-                <div class="matches-datas">
-                  <div class="matches-team">
-                    <img src="${match.team1.logo}" alt="${match.team1.name} Logo">
-                    <span>${match.team1.name}</span>
-                  </div>
-                  <div class="matches-team">
-                    <img src="${match.team2.logo}" alt="${match.team2.name} Logo">
-                    <span>${match.team2.name}</span>
-                  </div>
-                </div>
-                <div class="matches-scores">
-                  <div class="score">${match.team1.score}</div>
-                  <div class="score">${match.team2.score}</div>
+          <div class="league-header">
+              <img src="assets/images/${league.toLowerCase().replace(/\s+/g, "-")}-logo.png" alt="${league} Logo" class="league-logo">
+               <h4 class="league-title">${league} <span class="league-country">${matchesData[league].country}</span></h4>
+          </div>`;
+    
+          
+           // Wrap matches-header and matches-items inside matches-header-cont
+          matchesHTML += `
+          <div class="matches-header-cont">
+              <div class="matches-header">
+                <div class="match-category-btn active" onclick="showMatches('live', event)">Live</div>
+                <div class="match-category-btn" onclick="showMatches('highlight', event)">Highlight</div>
+                <div class="match-category-btn" onclick="showMatches('upcoming', event)">Upcoming</div>
+                <div class="match-category-btn calendar">
+                  <ion-icon name="calendar-outline" id="calendar-icon"></ion-icon>
+                  <input type="date" id="match-date" onchange="filterByDate()" style="display: none;" />
                 </div>
               </div>
-            </div>
-          `;
-        });
-      } else {
-        matchesHTML += `<p>No matches available for ${league} in ${category}.</p>`;
-      }
-    });
+              <div class="match-category-content">`;
 
-    matchesContainer.innerHTML = matchesHTML;
-  }
+
+            // Insert matches inside match-category-content
+          leagueCategoryMatches.forEach((match, index) => {
+              matchesHTML += `
+              <div class="matches-item" data-league="${league}" data-index="${index}" data-category="${category}">
+                  <div class="matches-teams">
+                      <div class="matches-time">${match.time}</div>
+                      <div class="matches-datas">
+                          <div class="matches-team">
+                              <img src="${match.team1.logo}" alt="${match.team1.name} Logo">
+                              <span>${match.team1.name}</span>
+                          </div>
+                          <div class="matches-team">
+                              <img src="${match.team2.logo}" alt="${match.team2.name} Logo">
+                              <span>${match.team2.name}</span>
+                          </div>
+                      </div>
+                      <div class="matches-scores">
+                          <div class="score">${match.team1.score}</div>
+                          <div class="score">${match.team2.score}</div>
+                      </div>
+                  </div>
+              </div>`;
+          });
+          // Close match-category-content and matches-header-cont
+          matchesHTML += `</div></div>`;
+      } else {
+          matchesHTML += `<p>No matches available for ${league} in ${category}.</p>`;
+      }
+  });
+
+  matchesContainer.innerHTML = matchesHTML;
+}
+
 
     // Event delegation for dynamically created match items
     matchesContainer.addEventListener("click", function (event) {
@@ -542,7 +554,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-  // Function to show the live match video
+    
  // Function to display live match details with tabs
 window.displayLiveMatch = function (league, matchIndex, category) {
   const match = matchesData[league]?.[category]?.[matchIndex];
@@ -577,9 +589,10 @@ window.displayLiveMatch = function (league, matchIndex, category) {
           <div class="live-match-info">
               <div class="match-tabs">
                   <button class="tab-btn active" data-tab="info">Info</button>
-                  <button class="tab-btn" data-tab="lineups">Lineups</button>
+                  <button class="tab-btn" data-tab="lineups">Line-ups</button>
                   <button class="tab-btn" data-tab="h2h">H2H</button>
               </div>
+                <img src="assets/images/Ad5.png" alt="Ad5" class="ad5-logo">
               <div class="tab-content" id="tab-content">
                   ${getTabContent("info", match)}
               </div>
@@ -590,29 +603,27 @@ window.displayLiveMatch = function (league, matchIndex, category) {
   // Add event listeners to the tabs
   document.querySelectorAll(".tab-btn").forEach(button => {
     button.addEventListener("click", function () {
-        // Remove active class from all buttons
         document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-        // Add active class to the clicked button
         this.classList.add("active");
 
-        // Ensure #tab-content exists
         const tabContentDiv = document.getElementById("tab-content");
         if (!tabContentDiv) {
             console.error("❌ ERROR: #tab-content div not found!");
             return;
         }
 
-        // Get tab content
-        const tabContent = getTabContent(this.dataset.tab, match);
+        // Render tab content first
+        tabContentDiv.innerHTML = getTabContent(this.dataset.tab, match);
 
-        // Debugging
-        console.log(`Updating #tab-content for tab: ${this.dataset.tab}`, tabContent);
-
-        // Force re-render
-        tabContentDiv.innerHTML = "";  // Clear previous content
-        tabContentDiv.innerHTML = tabContent;
+        // Generate formations after HTML is rendered
+        if (this.dataset.tab === "lineups") {
+            generateFormation(match.team1, "left");
+            generateFormation(match.team2, "right");
+        }
     });
 });
+
+  
 
 };
 
@@ -628,31 +639,168 @@ function getTabContent(tab, match) {
   switch (tab) {
       case "info":
           return `
-              <h3>Match Info</h3>
-              <p><strong>Venue:</strong> ${match.venue || "Not available"}</p>
-              <p><strong>Referee:</strong> ${match.referee || "Not available"}</p>
-              <p><strong>Competition:</strong> ${match.competition || "Not available"}</p>
+          <div class="info-match-container">
+             <h3>Match Info</h3>
+             <div class="info-match-details">
+             <!-- Left Section: Teams, Time, and Date -->
+               <div class="info-left">
+               <div class="info-teamNames">
+               <h4>${match.team1.name}</h4> vs <h4>${match.team2.name}</h4>
+               </div>
+                <p><strong><img src="assets/icons/arrow-colorIcon.png" class="info-colorIcon"></strong> ${match.time}</p>
+                <p><strong><img src="assets/icons/calender-colorIcon.png" class="info-colorIcon"></strong> ${match.date}</p>
+             </div>
+
+              <!-- Right Section: GBR, Stadium, and Country -->
+          <div class="info-right">
+            <p><strong><img src="assets/icons/gprIcon.png" class="info-colorIcon"></strong> ${match.gbr || "Not available"}</p>
+            <p><strong><img src="assets/icons/locationIcon.png" class="info-colorIcon"></strong></strong> ${match.venue || "Not available"}, <strong></strong> ${match.country || "Not available"}</p>
+        </div>
+        </div>
+       </div>
+
+
+            <div class="lineup-players-names">
+            <h5>Players</h5>
+            <div class="lineUp-cont">
+            <div class="lineup-home-players">
+                <h4>${match.team1.name}</h4>
+                <ul>
+                    ${match.team1.lineup.map(player => `
+                        <li>
+                            <span class="listed-player-number">${player.number}</span>
+                            <span class="listed-player-name">${player.name}</span>
+                        </li>
+                    `).join("")}
+                </ul>
+            </div>
+            <div class="lineup-away-players">
+                <h4>${match.team2.name}</h4>
+                <ul>
+                    ${match.team2.lineup.map(player => `
+                        <li>
+                            <span class="listed-player-number">${player.number}</span>
+                            <span class="listed-player-name">${player.name}</span>
+                        </li>
+                    `).join("")}
+                </ul>
+            </div>
+        </div>
           `;
 
-          case "lineups":
-            return `
-                <h3>Lineups (${match.team1.formation} vs ${match.team2.formation})</h3>
-                <div class="field">
-                    <div class="team team1">${generateFormation(match.team1)}</div>
-                    <div class="team team2">${generateFormation(match.team2)}</div>
-                </div>
-            `;
 
+          case "lineups":
+    return `
+        <div class="lineUpsteams-container">
+            <div class="lineUpsteam-info">
+                <img src="${match.team1.logo}" alt="${match.team1.name}" class="lineUpsteam-logo">
+                <div class="team-formation">
+                <h4>${match.team1.name}</h4>
+                <h5>${match.team1.formation}</h5>
+                </div>
+            </div>
+            <div class="lineUpsteam-info">
+                <div class="team-formation">
+                <h4>${match.team2.name}</h4>
+                <h3>${match.team2.formation}</h3>
+                </div>
+                <img src="${match.team2.logo}" alt="${match.team2.name}" class="lineUpsteam-logo">
+            </div>
+        </div>
+         <div id="football-field" class="field">
+            <div class="goalpost home-goalpost"></div>
+            <div class="penalty-box home-box"></div>
+            <div class="penalty-arc home-arc"></div>
+        
+            <div id="home-formation" class="formation-area"></div>
+
+            <div class="center-circle"></div>
+           <div class="center-line"></div>
+
+           <div id="away-formation" class="formation-area"></div>
+
+           <div class="goalpost away-goalpost"></div>
+           <div class="penalty-box away-box"></div>
+           <div class="penalty-arc away-arc"></div>
+        </div>
+        <div class="lineup-players-names">
+            <h5>Players</h5>
+            <div class="lineUp-cont">
+            <div class="lineup-home-players">
+                <h4>${match.team1.name}</h4>
+                <ul>
+                    ${match.team1.lineup.map(player => `
+                        <li>
+                            <span class="listed-player-number">${player.number}</span>
+                            <span class="listed-player-name">${player.name}</span>
+                        </li>
+                    `).join("")}
+                </ul>
+            </div>
+            <div class="lineup-away-players">
+                <h4>${match.team2.name}</h4>
+                <ul>
+                    ${match.team2.lineup.map(player => `
+                        <li>
+                            <span class="listed-player-number">${player.number}</span>
+                            <span class="listed-player-name">${player.name}</span>
+                        </li>
+                    `).join("")}
+                </ul>
+            </div>
+        </div>
+    `;
+
+        
+        
       case "h2h":
           return `
-              <h3>Head to Head</h3>
-              <ul>
-                  ${
-                      Array.isArray(match.h2h) && match.h2h.length > 0
-                          ? match.h2h.map(game => `<li>${game}</li>`).join("") 
-                          : "<p>No past matches available.</p>"
-                  }
-              </ul>
+           <div class="h2h-header">
+              <h3>H2H</h3>
+              <h4>${match.team1.name}</h4>
+               <h4>${match.team2.name}</h4>
+             </div>
+              <!-- Horizontal Line -->
+             <div class="h2h-header-line"></div>
+
+             <!-- h2h matches -->
+                <div class="h2h-matches-container">
+                 ${
+                 Object.keys(matchesData).map(league => `
+              <div class="h2h-league">
+                <h4 class="league-title">${league} <span class="league-country">${matchesData[league].country}</span></h4>
+
+                ${matchesData[league].live.map(game => `
+                    <div class="h2h-match">
+                        <div class="h2h-time">
+                            <span class="match-time">${game.time}</span>
+                            <span class="match-ft">FT</span>
+                        </div>
+                        <div class="h2h-right">
+                        <div class="h2h-team-data">
+                            <div class="h2h-team">
+                                <img src="${game.team1.logo}" alt="${game.team1.name}" class="h2h-logo">
+                                <span class="h2h-team-name">${game.team1.name}</span>
+                            </div>
+                            
+                            <div class="h2h-team">
+                               <img src="${game.team2.logo}" alt="${game.team2.name}" class="h2h-logo">
+                                <span class="h2h-team-name">${game.team2.name}</span>                                
+                            </div>
+                            </div>
+                             <div class="h2h-matches-scores">
+                              <div class="score">${match.team1.score}</div>
+                              <div class="score">${match.team2.score}</div>
+                             </div>
+
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        `).join("")
+    }
+                </div>
+              
           `;
 
       default:
@@ -693,13 +841,18 @@ matchesContainer.addEventListener("click", function (event) {
 
   
 
-  // Event listener for league click
-  leagueMatches.forEach((league) => {
-    league.addEventListener("click", function () {
-      const leagueName = league.querySelector("h3").textContent;
-      displayMatches(leagueName, "live");
+const leagueMatches = document.querySelectorAll(".leagues-matches");
+if (leagueMatches.length > 0) {
+    leagueMatches.forEach((league) => {
+        league.addEventListener("click", function () {
+            const leagueName = league.querySelector("h3").textContent;
+            displayMatches(leagueName, "live");
+        });
     });
-  });
+} else {
+    console.warn("⚠️ No league elements found. Check your HTML structure.");
+}
+
 
   // Event listener for match category clicks
   window.showMatches = function (category, event) {
@@ -723,28 +876,77 @@ matchesContainer.addEventListener("click", function (event) {
   displayMatches();
 });
 
-//lineup generate
-function generateFormation(team) {
-  if (!team.lineup || !team.formation) return "<p>Formation not available</p>";
 
-  // Convert formation "4-3-2-1" to an array [4, 3, 2, 1]
-  const formation = team.formation.split("-").map(num => parseInt(num));
+
+
+
+function generateFormation(team, side) {
+  const containerId = side === "left" ? "home-formation" : "away-formation";
+  let container = document.getElementById(containerId);
+
+  if (!container) {
+      console.error(`❌ ERROR: Element with ID "${containerId}" not found.`);
+      return;
+  }
+
+  container.innerHTML = ""; // Clear previous content
+
+  let formation = team.formation.split("-").map(Number);
+  let fieldWidth = container.clientWidth || 900;
+  let fieldHeight = container.clientHeight || 500;
+  let centerX = fieldWidth / 2;
+  let centerCircleRadius = 50; // Adjust if needed
+  let rowSpacing = fieldHeight / (formation.length + 1); // Reduce gap
+  let colSpacing = fieldWidth / (formation.length + 1);
+
+  let jerseyNumber = 1;
+  let playerClass = side === "left" ? "home-player" : "away-player";
   
-  let playersHTML = `<div class="formation">`;
 
-  let playerIndex = 0;
-  formation.forEach((numPlayers, rowIndex) => {
-      playersHTML += `<div class="row">`;
+  // ✅ Goalkeeper positioned correctly on goal line
+  let goalkeeper = document.createElement("div");
+  goalkeeper.classList.add("player", "goalkeeper", playerClass);
+  goalkeeper.textContent = jerseyNumber++;
+
+  goalkeeper.style.top = "50%";
+  goalkeeper.style.left = side === "left" ? "35px" : "calc(100% - 35px)";
+  goalkeeper.style.transform = "translate(-50%, -50%)";
+  container.appendChild(goalkeeper);
+
+  let topOffset = 80; // Less vertical gap
+
+  // ✅ Positioning Defenders to Attackers
+  for (let rowIndex = 0; rowIndex < formation.length; rowIndex++) {
+      let numPlayers = formation[rowIndex];
+      let rowTop = topOffset + rowIndex * rowSpacing;
+      let colLeft = side === "left"
+          ? 90 + rowIndex * colSpacing
+          : fieldWidth - (90 + rowIndex * colSpacing);
+
       for (let i = 0; i < numPlayers; i++) {
-          const player = team.lineup[playerIndex++] || { name: "?", position: "?" };
-          playersHTML += `<div class="player">${player.name} (${player.position})</div>`;
-      }
-      playersHTML += `</div>`;
-  });
+          let player = document.createElement("div");
+          player.classList.add("player", playerClass);
+          player.textContent = jerseyNumber++;
 
-  playersHTML += `</div>`;
-  return playersHTML;
+          if (rowIndex === formation.length - 1) {
+              // ✅ Forwards placed **on the center circle line, within their half**
+              let safeCenterX = side === "left"
+                  ? centerX - centerCircleRadius - 10
+                  : centerX + centerCircleRadius + 10;
+
+              player.style.left = `${safeCenterX}px`;
+              player.style.top = "50%"; // Exactly on the center circle line
+          } else {
+              player.style.left = `${colLeft}px`;
+              player.style.top = `${(i + 1) * (100 / (numPlayers + 1))}%`;
+          }
+
+          container.appendChild(player);
+      }
+  }
 }
+
+
 
 
 
