@@ -104,32 +104,51 @@ function showMatches(category, event) {
 }
 
 // Function to Create a Match Card
-function createMatchCard(container, match) {
-    const matchCard = document.createElement('div');
-    matchCard.classList.add('match-card');
+function createMatchCard(container, match, league, matchIndex, category) {
+  const matchCard = document.createElement('div');
+  matchCard.classList.add('match-card');
 
-    matchCard.innerHTML = `
-        <div class="match-details">
-            <div class="match-info">
-                <div class="team-logo">
-                    <img src="${match.logo1}" alt="${match.team1} Logo">
-                </div>
-                <div class="team-names">
-                    <span>${match.team1}</span>
-                    <span>vs</span>
-                    <span>${match.team2}</span>
-                </div>
-                <div class="team-logo">
-                    <img src="${match.logo2}" alt="${match.team2} Logo">
-                </div>
-            </div>
-            <div class="match-time">${match.time}</div>
-            <div class="match-country">${match.country}</div>
-            <button class="view-details-btn">View Details</button>
-        </div>
-    `;
+  matchCard.innerHTML = `
+      <div class="match-details">
+          <div class="match-info">
+              <div class="Matchteam">
+                  <img src="${match.logo1}" alt="${match.team1}">
+                  <span>${match.team1}</span>
+              </div>
+                  
+              <h5>vs</h5>
 
-    container.appendChild(matchCard);
+              <div class="Matchteam">
+                  <img src="${match.logo2}" alt="${match.team2}">
+                  <span>${match.team2}</span>                   
+              </div>
+          </div>
+          <div class="match-time">
+              <img src="assets/icons/clock.png" alt="Clock">
+              ${match.time}
+          </div>
+          <div class="match-country">
+              <img src="assets/icons/map-pin.png" alt="Map">
+              ${match.country}
+          </div>
+          <button class="view-details-btn" data-league="${league}" data-index="${matchIndex}" data-category="${category}">
+              <img src="assets/icons/arrow-up.png" alt="Arrow-up">
+              View Details
+          </button>
+      </div>
+  `;
+
+  // Append card to container
+  container.appendChild(matchCard);
+
+  // Select the button inside the newly created match card
+  const viewDetailsBtn = matchCard.querySelector('.view-details-btn');
+  
+  // Ensure the event listener is attached
+  viewDetailsBtn.addEventListener('click', function () {
+      console.log(`Clicked: ${match.team1} vs ${match.team2}`); // Debugging log
+      displayLiveMatch(league, matchIndex, category);
+  });
 }
 
 // Function to Filter Matches by Date
@@ -158,53 +177,77 @@ window.onload = function () {
 
 /*----------------------------news paage-----------------------------------*/
 
-function toggleNews(section) {
-    const newsSection = document.getElementById(section + '-news');
-    const seeMoreText = document.getElementById(section + '-text');
-    const icon = document.querySelector(`#${section} .see-more ion-icon`);
+document.addEventListener("DOMContentLoaded", function () {
+  showInitialNews("trending-news");
+  showInitialNews("updates-news");
+  updateRelativeTime();
+});
 
-    if (newsSection.style.display === 'none' || newsSection.style.display === '') {
-        newsSection.style.display = 'block';
-        seeMoreText.innerText = 'See less';
-        icon.name = 'caret-up-outline'; // Change to caret up icon
-    } else {
-        newsSection.style.display = 'none';
-        seeMoreText.innerText = 'See more';
-        icon.name = 'caret-down-outline'; // Change back to caret down icon
-    }
+// Function to display the first 5 news items on page load
+function showInitialNews(sectionId) {
+  const newsSection = document.getElementById(sectionId);
+  const newsItems = newsSection.querySelectorAll(".news-infomat");
+
+  if (newsItems.length > 0) {
+      newsItems.forEach((item, index) => {
+          item.style.display = index < 5 ? "flex" : "none"; // Ensure flex layout remains intact
+      });
+      newsSection.style.display = "flex"; // Set to flex to align with CSS
+      newsSection.style.flexDirection = "column"; // Keep stacking format
+  }
 }
+
+
+function toggleNews(section) {
+  const newsSection = document.getElementById(section + "-news");
+  const seeMoreText = document.getElementById(section + "-text");
+  const icon = document.querySelector(`#${section} .see-more ion-icon`);
+  const newsItems = newsSection.querySelectorAll(".news-infomat");
+
+  if (seeMoreText.innerText === "See more") {
+      newsItems.forEach(item => item.style.display = "block"); // Show all
+      seeMoreText.innerText = "See less";
+      icon.name = "caret-up-outline"; // Change to caret up icon
+  } else {
+      newsItems.forEach((item, index) => {
+          item.style.display = index < 5 ? "block" : "none"; // Show first 5, hide rest
+      });
+      seeMoreText.innerText = "See more";
+      icon.name = "caret-down-outline"; // Change to caret down icon
+  }
+}
+
+
 
 // Function to calculate and display the relative time
 function updateRelativeTime() {
-    const timeElements = document.querySelectorAll('.news-time');
-    const now = new Date();
+  const timeElements = document.querySelectorAll(".news-time");
+  const now = new Date();
 
-    timeElements.forEach((timeElement) => {
-        const postedTime = new Date(timeElement.dataset.posted);
-        const timeDifference = Math.floor((now - postedTime) / 1000); // Difference in seconds
+  timeElements.forEach((timeElement) => {
+      const postedTime = new Date(timeElement.dataset.posted);
+      const timeDifference = Math.floor((now - postedTime) / 1000); // Difference in seconds
 
-        let timeText;
-        if (timeDifference < 60) {
-            timeText = `${timeDifference} seconds ago`;
-        } else if (timeDifference < 3600) {
-            const minutes = Math.floor(timeDifference / 60);
-            timeText = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-        } else if (timeDifference < 86400) {
-            const hours = Math.floor(timeDifference / 3600);
-            timeText = `${hours} hour${hours > 1 ? 's' : ''} ago`;
-        } else {
-            const days = Math.floor(timeDifference / 86400);
-            timeText = `${days} day${days > 1 ? 's' : ''} ago`;
-        }
+      let timeText;
+      if (timeDifference < 60) {
+          timeText = `${timeDifference} seconds ago`;
+      } else if (timeDifference < 3600) {
+          const minutes = Math.floor(timeDifference / 60);
+          timeText = `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+      } else if (timeDifference < 86400) {
+          const hours = Math.floor(timeDifference / 3600);
+          timeText = `${hours} hour${hours > 1 ? "s" : ""} ago`;
+      } else {
+          const days = Math.floor(timeDifference / 86400);
+          timeText = `${days} day${days > 1 ? "s" : ""} ago`;
+      }
 
-        timeElement.textContent = timeText; // Set the time text directly
-    });
+      timeElement.textContent = timeText;
+  });
 }
 
 // Update relative time every 30 seconds
 setInterval(updateRelativeTime, 30000);
-// Initial call to populate times
-updateRelativeTime();
 
 
  // Function to show the detailed view 
@@ -251,6 +294,8 @@ document.addEventListener("DOMContentLoaded", () => {
         updatesNews.style.display = "block"; // Show News Updates
     };
 });
+
+
 
 
 
@@ -557,6 +602,7 @@ function displayMatches(leagueName = null, category = "live") {
     
  // Function to display live match details with tabs
 window.displayLiveMatch = function (league, matchIndex, category) {
+  
   const match = matchesData[league]?.[category]?.[matchIndex];
 
   if (!match || !match.video) return;

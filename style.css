@@ -368,7 +368,7 @@ body{
 
 .text-cont h4 {
     font-size: 0.75rem;
-    font-weight: 300;
+    font-weight: 400;
 }
 .live-matches {
     font-size: 0.85rem;
@@ -388,8 +388,8 @@ body{
   color: #fff;
   outline: none;
   text-decoration: none;
-  font-size: 0.65rem;
-  font-size: normal;
+  font-size: 0.68rem;
+  font-size: 400;
 
 }
 
@@ -472,7 +472,7 @@ body{
 
 /* League Table Container */
 .league-table-demo {
-    background: linear-gradient(180deg, #1b364e 25%, #427b69 65%);
+    background: linear-gradient(180deg, #1b364e 25%, #244537 75%);
     border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     color: white;
@@ -639,33 +639,70 @@ body{
 }
 
 .header-slider {
-    display: flex;
-    width: 100%;
-    overflow: hidden; /* Prevent content from overflowing */
+    overflow: visible; /* Ensure parent allows overflow */
     position: relative;
-    height: 210px; /* Match the height of content */
-  }
-/* Individual Slide */
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+}
+
+/* Individual Slide Styling */
 .slider-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex: 0 0 100%; /* Each slide takes 100% width */
-    border-radius: 10px;
+    flex: 0 0 100%;
     padding: 15px;
-    background-color: #244537;
-    color: white;
-    transition: transform 0.5s ease; /* Smooth sliding transition */
-  }
+    transition: transform 0.5s ease;
+    border-radius: 10px;
+    position: relative;
+    overflow: visible; /* Prevent image body from overflowing */
+    min-height: 220px; /* Adjust as needed */
+}
+
+.slider-content:nth-child(1) img,
+.slider-content:nth-child(2) img,
+.slider-content:nth-child(3) img {
+    position: absolute;
+    top: 100%; /* Move image down */
+    bottom: 0; /* Align bottom part inside div */
+    right: 10px;
+    width: 100%; /* Adjust size */
+    max-width: 250px; /* Ensure it remains big and bold */
+    height: auto;
+    z-index: 10;
+    transform: translateY(-100%);
+    
+}
+
+/* Backgrounds and Colors for Each Slide */
+.slider-content:nth-child(1) {
+    background: linear-gradient(to right, #002f4b, #005f73);
+}
+
+.slider-content:nth-child(2) {
+    background: linear-gradient(to right, #3f2b96, #a8c0ff);
+}
+
+.slider-content:nth-child(3) {
+    background: linear-gradient(to right, #ff512f, #dd2476);
+}
+
+.slider-content:nth-child(4) {
+    background: linear-gradient(to right, #141e30, #243b55);
+}
+
 .item-contnt {
     flex: 1;
     color: #fff;
-    padding-top: 50px;
+    padding-top: 30px;
+    z-index: 2;
 }
 
 .slider-title {
-    font-size: 0.85rem;
+    font-size: 1rem;
     margin-bottom: 10px;
+    font-weight: bold;
 }
 
 .slider-time,
@@ -674,7 +711,7 @@ body{
     display: flex;
     align-items: center;
     margin-bottom: 5px;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
 }
 
 /* Adjustments for Time, Date, and Country Rows */
@@ -682,7 +719,7 @@ body{
 .slider-date ion-icon,
 .slider-country ion-icon {
     margin-right: 5px;
-    color: #fbc02d;
+    color: #ffc107;
 }
 
 .sliderImage-container img {
@@ -695,22 +732,26 @@ body{
 .slider-button {
     display: flex;
     align-items: center;
-    background: #fff;
-    color: #244537;
+    background: #0A131F;
+    color: #fff;
     text-decoration: none;
-    padding: 5px 20px;
-    border-radius: 10px;
+    padding: 7px 10px;
+    border-radius: 20px;
     margin-top: 15px;
-    width: 150px;
+    font-size: 0.75rem;
+    text-align: center;
+    width: 110px;
+    font-weight: bold;
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .slider-button ion-icon {
     margin-right: 5px;
 }
-/* Advert Banner Styling */
-.advert {
-    background: #003366;
-    color: #fff;
+
+.slider-button:hover {
+    background: #ffdf00;
+    transform: scale(1.05);
 }
 
 
@@ -750,10 +791,16 @@ body{
     padding: 5px;
     gap: 2px;
     flex: 1; /* Ensures equal width for all items */
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, background 0.2s ease;
   
 }
 
-
+.news-short-message:hover {
+    background: #244537; /* Subtle hover effect */
+    transform: scale(1.05); /* Slightly enlarges on hover */
+}
 
 /* Headline */
 .shortNews-header {
@@ -783,7 +830,7 @@ body{
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-top: 10px;
+    margin-top: 8px;
     text-align: left;
 }
 
@@ -804,9 +851,11 @@ body{
     
 }
 
-.podcast-updates h2{
+.podcast-updates h5,
+.podcast-updates h4{
     color: #fff;
-    margin-top: 20px;
+    padding-top: 10px;
+    font-size: 0.75rem;
 }
 .podcast-update-img img{
     width: 100%;
@@ -817,29 +866,25 @@ body{
 
 
 
-.top-story {
+.shortTop-story {
     font-size: 0.75rem;
     color: #fff;
     font-weight: bold;
 }
-.see-more p {
-    font-size: 0.75rem;
-    font-weight: 300;
-}
 
 .latest-match {
-    padding-top: 20px;
+    padding-top: 30px;
     width: 100%;
     height: 100%;
 }
 
 .match-latest {
     width: 100%;
-    padding: 10px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background: #1f3750; 
+    background: linear-gradient( #1a2f4b6c 50%, #1b364e8e 25%);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
@@ -854,16 +899,19 @@ body{
 
 .match-header .category-btn {
     cursor: pointer;
-    padding: 4px 18px;
-    background-color: #234766a9;
+    padding: 4px 12px;
+    background-color: #14273f;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     color: white;
     border-radius: 20px;
     text-align: center;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
-    gap: 5px;
+    font-size: 0.70rem;
+    font-weight: 300;
+    gap: 3px;
+    margin-bottom: -15px;
 }
 
 .match-header .category-btn.calendar {
@@ -900,7 +948,8 @@ body{
 
 .category-btn.active {
     background-color: #fff;
-    color: #2e5c4e;
+    color: #14273f;
+    font-weight: bold;
     border-radius: 20px;
 }
 
@@ -928,9 +977,9 @@ body{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #11293C;
+    background-color: #1a2f4bad;
     color: white;
-    padding: 10px;
+    padding: 5px;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -945,49 +994,64 @@ body{
 .match-info {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 50px;
 }
 /* Team Names */
-.team-names {
-    font-size: 0.80rem;
-    font-weight: bold;
+.Matchteam {
+    font-size: 0.70rem;
+    font-weight: normal;
+    align-items: center;
     text-align: center;
     margin: 0 5px; /* Add space between "team1" and "vs team2" */
     display: flex;
     flex-direction: row;
-    gap: 10px;
-    margin-left: -10px;
+    gap: 5px;
+
 }
 
-.match-time {
-    font-size: 0.8rem;
+.match-info h5 {
+    font-weight: 300;
 }
 
-.match-country {
-    font-size: 0.8rem;
-    color: #fff;
-}
 
 .view-details-btn {
-    background-color: #fff;
-    color: #1a2f4b;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    color: #1A2F4B;
+    text-decoration: none;
+    padding: 3px 12px;
+    border-radius: 15px;
+    margin-top: 15px;
+    font-size: 0.67rem;
+   
 }
 
-.view-details-btn:hover {
-    background-color: #fbc02d;
-}
-
-.team-logo img {
+.Matchteam img {
     width: 20px; /* Reduce the size of logos */
     height: 20px;
-    border-radius: 50%;
-    object-fit: cover; /* Ensure logos maintain their aspect ratio */
+    object-fit: cover;
+   
 }
+
+.match-time,
+.match-country {
+    align-items: center;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 300;
+    display: flex;
+    gap: 2px;
+}
+
+.match-time img,
+.match-country img{
+    width: 13px; /* Reduce the size of logos */
+    height: 13px;
+    object-fit: cover;
+}
+
+
 
 
 /*third layers*/
@@ -1013,15 +1077,16 @@ body{
     position: relative;
     overflow: hidden;
     width: 100%;
-    height: 150px;
+    height: 110px;
     background-color: #244537; 
     border-radius: 10px;
+    border: 1px solid #ffc107a2;
 }
 
 /* Player Image */
 .player-image img {
-    height: 120px;
-    width: 130px; /* Adjust size as needed */
+    height: 80px;
+    width: 80px; /* Adjust size as needed */
     object-fit: cover; /* Ensures the image maintains aspect ratio */
     border-radius: 50%; /* Makes the image circular */
     margin-left: -20px;
@@ -1030,12 +1095,11 @@ body{
 /* Player Item */
 .player-item {
     position: absolute;
-    display: flex;
+    display: flex;  
     align-items: center;
-    gap: 20px;
+    gap: 8px;
     width: 100%;
-    max-width: 400px;
-    background: #244537;
+    background: linear-gradient(to bottom, #244537 40%, #1b364e 80%);
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -1056,17 +1120,17 @@ body{
 }
 
 .player-name {
-    font-size: 0.75rem;
+    font-size: 0.70rem;
     font-weight: bold;
-    margin-top: -10px;
     color: #fff;
 }
 .goals,
 .team-name,
 .leagues {
-    font-size: 0.70rem;
+    font-size: 0.55rem;
     color: #ffffff; /* White text for other details */
-    font-weight: 350;
+    font-weight: 300;
+    margin-right: 10px;
 }
 .player-item.player-1 .player-image {
     animation: slideInLeft 1s forwards;
@@ -1157,37 +1221,31 @@ body{
     color: black;
     width: 100%;
     padding: 10px;
-    border-radius: 10px;
-    gap: 10px; /* Adds spacing between the player image and data */
-    margin-top: -18px;
-   
+    border-radius: 10px; 
 }
 
-.predition-content h3{
-    font-size: 1rem;
-    padding-left: 5px;
-    padding-top: 10px;
-    margin-bottom: 10px;
+.predition-content h4{
+    font-size: 0.70rem;
+    margin-bottom: 15px;
 }
 .predit-selection {
     display: flex;
     flex-direction: row;
-    gap: 15px;
-    padding: 10px;
-    text-align: center;
+    gap: 5px;
+
 }
 .team-nam {
-    font-size: 0.75rem;
+    font-size: 0.70rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     font-weight: bold;
     gap: 5px;
     white-space: nowrap; /* Prevent line breaks */
-    text-align: center;
+    
 }
 .Select-team {
-    font-size: 0.75rem;
+    font-size: 0.70rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1198,8 +1256,8 @@ body{
 }
 /* Team Logo */
 .team-logo img {
-    width: 40px; /* Logo width */
-    height: 40px; /* Logo height */
+    width: 45px; /* Logo width */
+    height: 45px; /* Logo height */
     object-fit: contain; /* Maintain aspect ratio */
     border-radius: 50%; /* Circular logo */  
     margin-left: -5px;
@@ -1208,8 +1266,8 @@ body{
 
 /* Score Input */
 .score-input {
-    padding: 5px 5px;
-    border: 1px solid #ffc107;
+    padding: 3px 3px;
+    border: 1px solid #ffc1077c;
     border-radius: 5px;
     font-size: 1rem;
     text-align: center;
@@ -1219,9 +1277,23 @@ body{
     margin-left: 10px;
 }
 
+.score-input::placeholder {
+    font-size: 12px; /* Adjust to preferred size */
+    color: #888; /* Optional: Change color for better visibility */
+    opacity: 1; /* Ensure full visibility */
+}
+
 .score-input:focus {
     border-color: #ff8c00;
     box-shadow: 0 0 5px rgba(255, 140, 0, 0.8);
+}
+
+
+.advertise {
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
+    padding-bottom: 20px;
 }
 
 
@@ -1237,9 +1309,10 @@ body{
     flex: 1; /* Make both child containers take up equal width */
     display: flex; /* Maintain flexibility for internal layout */
     flex-direction: column; /* Ensure content inside stacks properly */
-    padding: 10px; /* Optional: Add padding for better spacing */
+    padding: 8px; /* Optional: Add padding for better spacing */
     border-radius: 10px; /* Optional: Rounded corners for a neat look */
-    margin-top: -10px;
+    background: linear-gradient(#1A2F4B 50%, #1b364e 25%);
+    margin-bottom: 20px;
 }
 
 .news-infomat {
@@ -1248,10 +1321,19 @@ body{
     justify-content: flex-start; /* Aligns items to the start of the container */
     align-items: flex-start; /* Ensures top alignment of wrapped rows */
     gap: 10px; /* Space between items */
-    padding: 15px;
+    padding: 8px;
     border-radius: 10px;
-    margin-bottom: 10px;
-    background: #14273f;
+    color: #fff;
+}
+
+.news-container {
+    color: inherit;
+    text-decoration: none;
+
+}
+
+.news-container:hover {
+    transform: scale(1.05); /* Slightly enlarges on hover */
 }
 
 .news-messages {
@@ -1286,7 +1368,11 @@ body{
     align-items: center;
     gap: 5px;
     color: #fff;
-    font-size: 1rem;
+    font-size: 0.70rem;
+}
+
+.seemore-ankle {
+    font-size: 0.70rem;
 }
 
 #news-details-view p {
@@ -1297,9 +1383,6 @@ body{
     color: #fff;
 }
 
-.see-more ion-icon {
-    font-size: 1rem;
-}
 
 /* Style for the news meta information */
 .news-meta {
@@ -1378,7 +1461,8 @@ body{
 
 .live-games {
     background-color: #1a2f4b;
-    border: 1px solid #ffc107;
+    display: flex;
+    flex-direction: row;
     width: 100%;
    padding: 10px;
    border-radius: 15px;
@@ -1413,11 +1497,52 @@ body{
 
 }
 
+/*-- newsAd-middle styling */
 
-/*podcast */
+.newsAd-middle {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    width: 100%;
+    padding-top: 10px;
+    margin-bottom: 20px;
+
+}
+
+
+.newsAd-container {
+    border-radius: 10px;
+    flex: 1;
+
+}
+
+.podcast-comingSoon {
+    background: linear-gradient( #1a2f4b6c 50%, #1b364e8e 25%);
+    display: flex;
+    flex-direction: row;
+    border-radius: 10px;
+    padding: 12px;
+    flex: 1;
+    color: #fff;
+    font-size: 0.70rem;  
+}
+
+.podcast-comingSoon h4 {
+    margin-left: -10px;
+    margin-bottom: 15px;
+}
+.podcastComingSoon-img img{
+    width: 85%;
+    height: 120px;
+    object-fit: cover; /* Ensures proper scaling */
+    border-radius: 5px; 
+}
+
+
+
+/*.............................podcast............................................ */
 
 .podcast-container1 {
-    background: #14273f;
     border-radius: 10px;
     padding: 20px;
     width: 100%;
@@ -1435,6 +1560,12 @@ body{
     object-fit: cover; /* Ensures proper scaling */
     border-radius: 5px; 
 }
+
+
+
+
+
+
 
 
 
