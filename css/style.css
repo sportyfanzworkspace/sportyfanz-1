@@ -26,7 +26,7 @@ body{
     position: fixed;
     top: 0; /* Start at the top of the page */
     left: 0;
-    display: flex;
+    display: block;
     flex-direction: column;
     transition: width 0.3s ease-in-out;
     border-top-left-radius: 20px;
@@ -86,7 +86,7 @@ body{
 /* Sidebar Icon */
 .icon img {
     width: 140px; /* Consistent size */
-    height: 50px;
+    height: 55px;
     object-fit: contain;   
     cursor: pointer;
     margin-left: -10px;
@@ -393,8 +393,10 @@ body{
 
 
 /* Layers 1*/
+.text-cont4,
 .text-cont3,
 .text-cont2,
+.text-cont1,
 .text-cont{
     display: flex;
     padding-bottom: 15px;
@@ -403,12 +405,14 @@ body{
     width: 100%;
 }
 
+.text-cont4 h4,
 .text-cont3 h4,
 .text-cont2 h4,
+.text-cont1 h4,
 .text-cont h4 {
-    font-size: 0.75rem;
+    font-size: 0.80rem;
     font-family: 'Lato';
-    font-weight: 500;
+    font-weight: bold;
 }
 
 .live-matches {
@@ -568,9 +572,9 @@ body{
 }
 
 .leagueTable-text-cont h4 {
-    font-size: 0.75rem;
+    font-size: 0.80rem;
     font-family: 'Lato';
-    font-weight: 300;
+    font-weight: bold;
 }
 
 
@@ -777,7 +781,7 @@ body{
 
 /* Banner 2 background image */
 .banner2 {
-    background-image: url('../assets/images/podcastimg.png');
+    background-image: url('../assets/images/podcastImg.png');
 }
 
 /* Overlay text box */
@@ -1457,7 +1461,7 @@ body{
 }
 
 .main-footer {
-    background-color: #111; color: #fff; padding: 2rem 1rem; text-align: center;
+    background-color: #9fbad98f; color: #fff; padding: 2rem 1rem; text-align: center;
 }
 
 .footer-links a {
@@ -1745,6 +1749,19 @@ body{
     transform: translateY(0);
   }
 }
+
+.news-image {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.news-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
 
 
 .newsDetails-content img {
@@ -2260,14 +2277,10 @@ body{
   .team-position:hover::after {
     transform: translateX(-50%) scale(1);
   }
-    
 
 
 
-
-
-
-/*..................................................line match page........................*/
+/*..................................................live match page........................*/
 
 
 .leags-country {
@@ -2301,10 +2314,11 @@ body{
 .matches-header {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
     gap: 8px;
     position: relative;
+    border: none;
   }
+
   .match-category-btn {
     color: #fff;
     border-radius: 20px;
@@ -2851,6 +2865,8 @@ body{
     margin: 20px auto;
     border-radius: 10px;
     overflow: hidden;
+    transform: rotate(0deg);
+    transform-origin: center;
   }
   
   
@@ -3759,7 +3775,7 @@ body{
 
 
  /* Tablet and small desktops */
-@media (max-width: 1024px) {
+@media screen and (max-width: 1024px) {
 /* Sidebar Container */
     .sidebar {
         display: none;
@@ -3778,6 +3794,17 @@ body{
         
     }
 
+    /* Sidebar Icon */
+   .icon img {
+     width: 140px; /* Consistent size */
+     height: 50px;
+     object-fit: contain;   
+     cursor: pointer;
+     margin-left: -10px;
+     margin-right: 10px;
+    }
+
+
      .toggle-icon .icon {
         display: none;
      }
@@ -3793,6 +3820,11 @@ body{
      /* Hide other icons except X when sidebar is open */
      .sidebar.active .toggle-btn {
         display: none;
+    }
+
+     .toggle-btn {
+        display: block; /* Ensure button is visible */
+        cursor: pointer;
     }
 
     
@@ -3970,12 +4002,13 @@ body{
 
     .content {
      display: flex;
-      flex-direction: column;
+     flex-direction: column;
+      
     }
 
  .layer {
      display: flex;
-      flex-direction: column;
+     flex-direction: column;
     }
 
     .live-match-demo,
@@ -3986,46 +4019,59 @@ body{
         width: 100%;
     }
     
+    /* Layers 1*/
+.text-cont4,
+.text-cont3,
+.text-cont2,
+.text-cont1,
+.text-cont{
+    display: flex;
+    padding-bottom: 15px;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.text-cont4 h4,
+.text-cont3 h4,
+.text-cont2 h4,
+.text-cont1 h4,
+.text-cont h4 {
+    font-size: 0.80rem;
+    font-family: 'Lato';
+    font-weight: bold;
+}
+
+.leagueTable-text-cont h4 {
+    font-size: 0.80rem;
+    font-family: 'Lato';
+    font-weight: bold;
+}
+
    
     .header-slider {
         width: 100%;
-        height: 250px;
+        height: 170px;
     }
 
+     
+    .header-slider { order: 1; }  /* First in mobile */
+    .text-cont { order: 2; }
+    .live-match-demo { order: 3; } /* Second */
+    .text-cont2 { order: 4; }
+    .slider { order: 5; }
+    .advert { order: 6; }
+    .text-cont3 { order: 7; } 
+    .predition-container { order: 8; } /* Fourth */
+    .leagueTable-text-cont { order: 9; }
+    .league-table-demo { order: 10; } /* Third */
+    .advert1 { order: 11; }
+    .news-podcast { order: 12; } /* Fifth (should be positioned after prediction container) */
 
-
-    .header-slider {
-      order: 1;
-     }
-
-  .section-wrapper {
-   order: 2;
-   }
-
-  .section-wrapper1 {
-   order: 3;
-   }
-
-.slider {
-  order: 4;
-}
-
-.advert {
-  order: 5;
-}
-
-.prediction-container {
-  order: 6;
-}
-
-.advert1 {
-  order: 7;
-}
-
-.league-table-demo {
-  order: 8;
-}
   
+    
+  
+ 
     .highlight-time,
      .game-leag,
     .team {
@@ -4055,6 +4101,27 @@ body{
         font-size: 0.80rem;
      }
 
+
+     .field {
+    height: 600px; /* Increase for more vertical space */
+    width: 300px;
+    transform: rotate(90deg);
+    transform-origin: center;
+    margin: 40px auto;
+  }
+
+  .player-dot {
+    /* Unrotate players so they're upright */
+    transform: translate(-50%, -50%) rotate(-90deg);
+  }
+
+  .center-circle,
+  .penalty-box,
+  .penalty-arc,
+  .center-line,
+  .goal {
+    transform: rotate(-90deg);
+  }
 
      .advert img {
         max-height: 200px; 
@@ -4247,6 +4314,10 @@ body{
 
       /*......league table page .....*/
     
+      body.league-table-page .leagues-country.moved {
+        margin-top: 1rem;
+      }
+      
       body.league-table-page .middle-layer {
         padding: 0; /* Removes padding */
         margin: 0 auto; /* Centers content */
@@ -4324,7 +4395,7 @@ body{
 } 
 
 /* === Adjustments for 768px Devices === */
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
   .header {
     padding: 20px 15px;
   }
@@ -4339,7 +4410,7 @@ body{
 }
 
 /* === Adjustments for 480px Devices === */
-@media (max-width: 480px) {
+@media screen and (max-width: 480px) {
   .mobileMenu-logo img {
     width: 80px;
   }

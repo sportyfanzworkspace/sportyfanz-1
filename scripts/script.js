@@ -1,5 +1,5 @@
 
-const APIkey = 'e71d42864ea0a2aaade48aa444ad82ebc9efa53000b7b91d5a279651a201bc71';
+const APIkey = '467a83d04fc852bcc3d2a6f55c7ff3839944595a4106c7a4b576cbc58cd47ea9';
 
 //sidebar toggle for web view
 function toggleSidebar() {
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const from = new Date().toISOString().split('T')[0]; // today's date
     const to = from;
-    const leagueIDs = ["3", "152", "302", "207", "168", "175"]; // Major leagues
+    const leagueIDs = ["3", "152", "302", "207", "168", "175", "135", "162", "275", "61"]; //major leagues
 
     let matchesList = [];
     let currentMatchIndex = 0;
@@ -756,12 +756,6 @@ function createMatchCard(container, match, category, matchIndex) {
                         ${matchRound}
                     </div>` : ""}
             </div>
-
-            <!-- Column 6: View Details Button -->
-            <button class="view-details-btn" data-category="${category}" data-index="${matchIndex}">
-                <img src="assets/icons/arrow-up.png" alt="Arrow-up">
-                View Details
-            </button>
         </div>
     `;
 
@@ -1383,23 +1377,104 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-// menu toggle button for sidebar for mobile view
-document.addEventListener("DOMContentLoaded", function () {
-  function updateSidebarVisibility() {
-      const sidebar = document.getElementById("sidebar");
-      const toggleBtn = document.querySelector(".toggle-btn");
-
+// css code to restructure page layout for mobile and tablet view
+ document.addEventListener("DOMContentLoaded", function () {
+  function reorderElements() {
       if (window.innerWidth <= 1024) {
-          toggleBtn.style.display = "block"; // Show toggle button for mobile & tablet
-      } else {
-          toggleBtn.style.display = "none"; // Hide toggle button for web view
-          sidebar.classList.remove("collapsed"); // Ensure sidebar is fully visible on web
+          const parent = document.querySelector(".content");
+
+          const headerSlider = document.querySelector(".header-slider");
+          const textCont = document.querySelector(".text-cont");
+          const liveMatchDemo = document.querySelector(".live-match-demo");
+          const textCont2 = document.querySelector(".text-cont2");
+          const slider = document.querySelector(".slider");
+          const advertPodcast = document.querySelector(".advert");
+          const textCont3 = document.querySelector(".text-cont3");
+          const predictionContainer = document.querySelector(".predition-container");
+          const leagueTabletextCont = document.querySelector(".leagueTable-text-cont");
+          const leagueTableDemo = document.querySelector(".league-table-demo");
+          const advert1Podcast = document.querySelector(".advert1");
+          const newsPodcast = document.querySelector(".news-podcast");
+
+         
+ 
+          // Append in the correct order
+          if (headerSlider) parent.appendChild(headerSlider);
+          if (textCont) parent.appendChild(textCont);
+          if (liveMatchDemo) parent.appendChild(liveMatchDemo);
+          if (textCont2) parent.appendChild(textCont2);
+          if (slider) parent.appendChild(slider);
+          if (advertPodcast) parent.appendChild(advertPodcast);
+          if (textCont3) parent.appendChild(textCont3);
+          if (predictionContainer) parent.appendChild(predictionContainer);
+          if (leagueTabletextCont) parent.appendChild(leagueTabletextCont);
+          if (leagueTableDemo) parent.appendChild(leagueTableDemo);
+          if (advert1Podcast) parent.appendChild(advert1Podcast);
+          if (newsPodcast) parent.appendChild(newsPodcast);
       }
   }
 
-  // Run on page load and on window resize
-  updateSidebarVisibility();
-  window.addEventListener("resize", updateSidebarVisibility);
+  reorderElements();
+  window.addEventListener("resize", reorderElements);
+});
+
+// menu toggle button for sidebar for mobile view
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.getElementById("sidebar");
+    const toggleBtn = document.querySelector(".toggle-btn");
+    const menuLogo = document.querySelector(".mobileMenu-logo"); // safer than ion-icon
+    const closeIcon = document.querySelector(".iconX");
+
+    function isMobileOrTablet() {
+        return window.innerWidth <= 1024;
+    }
+
+    function updateSidebarVisibility() {
+        if (isMobileOrTablet()) {
+            if (toggleBtn) toggleBtn.style.display = "block";
+            sidebar.classList.remove("active");
+            sidebar.style.display = "none";
+        } else {
+            if (toggleBtn) toggleBtn.style.display = "none";
+            sidebar.classList.remove("collapsed");
+            sidebar.classList.remove("active");
+            sidebar.style.display = "block";
+        }
+    }
+
+    function toggleSidebar() {
+        if (isMobileOrTablet()) {
+            sidebar.classList.toggle("active");
+            sidebar.style.display = sidebar.classList.contains("active") ? "block" : "none";
+        }
+    }
+
+    if (menuLogo) {
+        menuLogo.addEventListener("click", toggleSidebar);
+    }
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", toggleSidebar);
+    }
+
+    if (closeIcon) {
+        closeIcon.addEventListener("click", () => {
+            sidebar.classList.remove("active");
+            sidebar.style.display = "none";
+        });
+    }
+
+    // Move h1 under logo
+    if (isMobileOrTablet()) {
+        const headerTopbar = document.querySelector(".header-topbar");
+        const h1 = headerTopbar?.querySelector("h1");
+        if (menuLogo && h1) {
+            headerTopbar.insertBefore(h1, menuLogo.nextSibling);
+        }
+    }
+
+    updateSidebarVisibility();
+    window.addEventListener("resize", updateSidebarVisibility);
 });
 
 
@@ -1413,48 +1488,6 @@ document.addEventListener("DOMContentLoaded", function () {
           searchBar.style.display = searchBar.style.display === "none" ? "block" : "none";
       }
   });
-});
-
-
- 
-//mobile menu icon functionality
-document.addEventListener("DOMContentLoaded", function () {
-  if (window.innerWidth <= 1024) { // Apply only for mobile/tablet
-      let headerTopbar = document.querySelector(".header-topbar");
-      let mobileMenuLogo = document.querySelector(".mobileMenu-logo");
-      let h1 = document.querySelector(".header-topbar h1");
-
-      // Move h1 below mobileMenu-logo
-      if (mobileMenuLogo && h1) {
-          headerTopbar.insertBefore(h1, mobileMenuLogo.nextSibling);
-      }
-  }
-});
-
-
-// toggle sidebar for mobile view
-document.addEventListener("DOMContentLoaded", function () {
-    let sidebar = document.getElementById("sidebar");
-    let menuIcon = document.querySelector(".mobileMenu-logo ion-icon");
-    let closeIcon = document.querySelector(".iconX");
-
-    function toggleMobileSidebar() {
-        if (window.innerWidth <= 1024) { // Mobile & Tablet Only
-            sidebar.classList.toggle("active");
-            sidebar.style.display = sidebar.classList.contains("active") ? "block" : "none";
-        }
-    }
-
-    // Open sidebar on menu icon click
-    if (menuIcon) { 
-        menuIcon.addEventListener("click", toggleMobileSidebar);
-    }
-
-    // Close sidebar on close icon click
-    closeIcon.addEventListener("click", () => {
-        sidebar.classList.remove("active");
-        sidebar.style.display = "none";
-    });
 });
 
 
