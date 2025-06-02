@@ -69,7 +69,7 @@ fetch(`https://apiv3.apifootball.com/?action=get_leagues&APIkey=${APIkey}`)
                         </div>
                     </div>
                     <div class="arrow-direct">
-                        <img src="assets/icons/Arrow - Right 2.png" alt="Arrow">
+                        <img src="/assets/icons/Arrow - Right 2.png" alt="Arrow">
                     </div>`;
 
                 leagueElement.addEventListener("click", function () {
@@ -173,6 +173,7 @@ function updateMatches(matches) {
         allHighlights: []
     };
 
+    
     const now = luxon.DateTime.utc();  // Get the current time in UTC
     const oneWeekAgo = now.minus({ days: 7 });
 
@@ -941,8 +942,8 @@ function loadH2HData(APIkey, homeTeam, awayTeam) {
      
   
   // ✅ Fetch lineup and dynamically infer formation
-function fetchAndRenderLineups(match_id, match) {
-    fetch(`https://apiv3.apifootball.com/?action=get_lineups&match_id=${match_id}&APIkey=${APIkey}`)
+     function fetchAndRenderLineups(match_id, match) {
+       fetch(`https://apiv3.apifootball.com/?action=get_lineups&match_id=${match_id}&APIkey=${APIkey}`)
         .then(res => res.json())
         .then(data => {
             const lineups = data[match_id]?.lineup;

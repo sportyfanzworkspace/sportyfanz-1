@@ -80,10 +80,20 @@ const MAX_VISIBLE_NEWS = 5;
 async function loadNews() {
   const loader = document.querySelector('.loading-indicator');
   if (loader) loader.style.display = 'block';
+  //const baseURL =
+  //window.location.hostname === 'localhost'
+   // ? 'http://localhost:10000'
+   // : 'https://sports-news-api-a7gh.onrender.com'; // replace with actual Render backend URL
 
   try {
-    const response = await fetch('/api/news');
-    const { trending, updates } = await response.json();
+    
+   const response = await fetch(`http://localhost:3000/api/news`);
+    if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error ${response.status}: ${errorText}`);
+    }
+const { trending, updates } = await response.json();
+
     populateNewsSection('trending-news', trending);
     populateNewsSection('updates-news', updates);
   } catch (error) {
@@ -103,6 +113,10 @@ function populateNewsSection(sectionId, newsList) {
     container.innerHTML = newsList.map((item, index) => `
         <div class="news-infomat" data-index="${index}" data-section="${sectionId}">
             <h1 class="news-title">${item.title}</h1>
+            ${item.image ? `<div class="news-image">
+          <img src="/api/image-proxy?url=${encodeURIComponent(item.image)}&width=600&height=400" 
+          alt="Image for ${item.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/600x400?text=No+Image'" />
+          </div>` : ''}
             <div class="news-meta">
                 <p class="news-desc">${enhanceSportsDescription(item.description)}</p>
                 <span class="news-time" data-posted="${item.pubDate}">Just now</span>
@@ -133,7 +147,29 @@ function showFullNews(clickedItem) {
     // Create and display the full view container
     const fullView = document.createElement('div');
     fullView.className = 'news-full-view';
+    // Clone clicked item HTML
     fullView.innerHTML = clickedItem.innerHTML;
+
+    // Enlarge image inside fullView if exists
+    const img = fullView.querySelector('img');
+     if (img) {
+      img.style.maxWidth = '100%';
+      img.style.height = 'auto';
+      img.style.borderRadius = '12px';
+      img.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+      img.style.cursor = 'zoom-in';
+
+       img.onclick = () => {
+      if (img.style.maxWidth === '100%') {
+       img.style.maxWidth = 'none';
+       img.style.cursor = 'zoom-out';
+      } else {
+       img.style.maxWidth = '100%';
+       img.style.cursor = 'zoom-in';
+      }
+    };
+   }
+
 
     // Add back button
     const backButton = document.createElement('button');
