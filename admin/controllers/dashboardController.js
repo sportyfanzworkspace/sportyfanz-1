@@ -5,157 +5,244 @@ const cache = require('../utils/cache/redisCache');
 const playerImageMap = require('../utils/playerImageMap');
 
 
-const APIkey = process.env.FOOTBALL_API_KEY;
+const APIkey = process.env.APIFOOTBALL_API_KEY;
 
-// matches cache (5 min)
-const getMatchesCache = new NodeCache({ stdTTL: 300 });
+// Reusable fetch with retry + timeout-------------------------
+async function fetchRetry(url, retries = 3, timeout = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+
+    if (!res.ok) {
+      if (retries > 0) {
+        return fetchRetry(url, retries - 1, timeout);
+      }
+      throw new Error("Bad response: " + res.status);
+    }
+
+    clearTimeout(timer);
+    return res.json();
+
+  } catch (err) {
+    clearTimeout(timer);
+    if (retries > 0) {
+      return fetchRetry(url, retries - 1, timeout);
+    }
+    throw err;
+  }
+}
+
+
+// Display matches for live-match-demo
+const getMatchesCache = new NodeCache({ stdTTL: 60 });
 
 exports.getMatches = async (req, res) => {
   const { from, to } = req.query;
   const limit = parseInt(req.query.limit) || 100;
 
   if (!from || !to) {
-    return res.status(400).json({ error: 'Missing query parameters' });
+    return res.status(400).json({ error: "Missing query parameters" });
   }
 
-  const cacheKey = `matches_${from}_${to}_${limit}`; // ✅ specific key
+  const cacheKey = `matches_${from}_${to}_${limit}`;
   const cached = getMatchesCache.get(cacheKey);
   if (cached) return res.json(cached);
 
   try {
-    const leaguesRes = await fetch(`https://apiv3.apifootball.com/?action=get_leagues&APIkey=${APIkey}`);
-    if (!leaguesRes.ok) {
-      return res.status(502).json({ error: 'Failed to fetch leagues from external API' });
+    //DIRECT MATCHES FETCH — No league loop
+    const url = `https://apiv3.apifootball.com/?action=get_events&from=${from}&to=${to}&timezone=Europe/Berlin&APIkey=${APIkey}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      return res.status(502).json({ error: "Failed to fetch events" });
     }
 
-    const leagues = await leaguesRes.json();
-    if (!Array.isArray(leagues)) {
-      return res.status(500).json({ error: 'Invalid league response structure' });
+    let data;
+    try {
+      data = await response.json();
+    } catch (err) {
+      return res.status(500).json({ error: "Unable to parse match data" });
     }
 
-    let matchesList = [];
-
-    for (const league of leagues) {
-      try {
-        const url = `https://apiv3.apifootball.com/?action=get_events&from=${from}&to=${to}&league_id=${league.league_id}&timezone=Europe/Berlin&APIkey=${APIkey}`;
-        const response = await fetch(url);
-        if (!response.ok) {
-          console.warn(`Bad response for league ${league.league_name}: ${response.status}`);
-          continue;
-        }
-
-        let data;
-        try {
-          data = await response.json();
-        } catch (jsonErr) {
-          console.warn(`JSON parse error for league ${league.league_name}`);
-          continue;
-        }
-
-        if (Array.isArray(data)) {
-          matchesList.push(...data);
-        }
-      } catch (err) {
-        console.warn(`Error fetching matches for league ${league.league_name}:`, err.message);
-      }
+    if (!Array.isArray(data)) {
+      return res.status(500).json({ error: "Invalid match data format" });
     }
 
-    matchesList.sort((a, b) => {
-      const aTime = new Date(`${a.match_date}T${a.match_time}`);
-      const bTime = new Date(`${b.match_date}T${b.match_time}`);
-      return aTime - bTime;
+    // Sort by date/time
+    data.sort((a, b) => {
+      const A = new Date(`${a.match_date}T${a.match_time}`);
+      const B = new Date(`${b.match_date}T${b.match_time}`);
+      return A - B;
     });
 
-    const result = matchesList.slice(0, limit);
-    getMatchesCache.set(cacheKey, result); // ✅ cache based on key
+    // Apply limit
+    const result = data.slice(0, limit);
+
+    // Cache result
+    getMatchesCache.set(cacheKey, result);
+
     res.json(result);
 
   } catch (err) {
-    console.error('Error fetching matches:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching matches:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
-    
 };
 
 
+// function to fetch top scorer
 
+const topScorersCache = new NodeCache({ stdTTL: 60 });
 
-// matches cache (5 min)
-const topScorersCache = new NodeCache({ stdTTL: 300 });
+// --- CONFIG ---
+const leaguesToFetch = [
+  152, //Premier League
+  153, //Championship
+  154, //League One
+  155, //League Two
+  302, //La Liga
+  303, //La Liga 2
+  207, //Serie B
+  208, //Serie A
+  175, //Bundesliga
+  176, //Bundesliga 2
+  168, //Ligue 1
+  169, //Ligue 2
+  3, //Champions League
+  848, //Europa League
+  23, //Europa Conference League
+  1, //World Cup
+  4, //Euro Championship
+  12, //CAF Champions League
+  20, //Africa Cup of Nations
+  403, //NPFL
+];
 
+// Display names for leagues
+const leagueNames = {
+  // England
+  152: "Premier League",
+  153: "Championship",
+  154: "League One",
+  155: "League Two",
+
+  // Spain
+  302: "La Liga",
+  303: "La Liga 2",
+
+  // Italy
+  207: "Serie B",
+  208: "Serie A",
+  // Germany
+  175: "Bundesliga",
+  176: "Bundesliga 2",
+
+  // France
+  168: "Ligue 1",
+  169: "Ligue 2",
+
+  // Europe (UEFA)
+  3: "Champions League",
+  848: "Europa League",
+  23: "Europa Conference League",
+
+  // International
+  1: "World Cup",
+  4: "Euro Championship",
+
+  // Africa
+  12: "CAF Champions League",
+  20: "Africa Cup of Nations",
+
+  // Nigeria (if you plan local coverage)
+  403: "NPFL"
+};
+
+// truncate helper
+function truncateWords(str, limit = 2) {
+  if (!str) return str;
+  return str.split(" ").slice(0, limit).join(" ");
+}
+
+// season helper
+function getCurrentSeason() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  return month >= 7 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+}
+
+// MAIN ENDPOINT
 exports.getTopScorers = async (req, res) => {
-  const limitPerLeague = parseInt(req.query.limitPerLeague) || 3;
-  const globalLimit = parseInt(req.query.limit) || 100;
-
-  // ✅ Generate a specific cache key
-  const cacheKey = `topScorers_${limitPerLeague}_${globalLimit}`;
-  const cached = topScorersCache.get(cacheKey);
-  if (cached) {
-    return res.json(cached);
-  }
-
   try {
-    const leaguesRes = await fetch(`https://apiv3.apifootball.com/?action=get_leagues&APIkey=${APIkey}`);
-    if (!leaguesRes.ok) {
-      return res.status(502).json({ error: "Failed to fetch leagues" });
+    const limit = parseInt(req.query.limit) || 200;
+    const season = getCurrentSeason();
+    const cacheKey = `topscorers_${season}_${limit}`;
+
+    // Serve cached version
+    const cached = topScorersCache.get(cacheKey);
+    if (cached) {
+      console.log("Returning cached top scorers");
+      return res.json(cached);
     }
 
-    const leaguesData = await leaguesRes.json();
-    if (!Array.isArray(leaguesData)) {
-      return res.status(500).json({ error: "Invalid leagues structure" });
-    }
+    let results = [];
 
-    let allScorers = [];
-
-    for (const league of leaguesData) {
-      const leagueId = league.league_id;
-      const leagueName = league.league_name;
-
+    for (const leagueId of leaguesToFetch) {
       try {
-        const scorerRes = await fetch(`https://apiv3.apifootball.com/?action=get_topscorers&league_id=${leagueId}&APIkey=${APIkey}`);
-        if (!scorerRes.ok) {
-          console.warn(`Failed to fetch scorers for league ${leagueName}: ${scorerRes.status}`);
-          continue;
+        const url = `https://apiv3.apifootball.com/?action=get_topscorers&league_id=${leagueId}&season=${season}&APIkey=${APIkey}`;
+        const data = await fetchRetry(url);
+
+        if (!Array.isArray(data) || data.length === 0) continue;
+
+        // sort by highest goals
+        data.sort((a, b) => b.goals - a.goals);
+
+        const highestGoals = parseInt(data[0].goals) || 0;
+        if (highestGoals === 0) continue;
+
+        // include ties
+        const topPlayers = data.filter(
+          (p) => parseInt(p.goals) === highestGoals
+        );
+
+        for (const p of topPlayers) {
+          results.push({
+            league: leagueNames[leagueId] || "Unknown League",
+            player: p.player_name,
+            goals: highestGoals,
+            team: truncateWords(p.team_name),
+            image: p.player_image,
+          });
         }
-
-        const scorers = await scorerRes.json();
-        if (!Array.isArray(scorers) || scorers.length === 0) continue;
-
-        const filteredScorers = scorers
-          .filter(p => parseInt(p.goals) >= 10)
-          .slice(0, limitPerLeague)
-          .map(p => ({
-            player_name: p.player_name,
-            player_image: p.player_image || (playerImageMap[p.player_name]
-              ? `/assets/players/${playerImageMap[p.player_name]}`
-              : ''),
-            team_name: p.team_name,
-            league_name: leagueName,
-            goals: parseInt(p.goals)
-          }));
-
-        allScorers.push(...filteredScorers);
-      } catch (innerErr) {
-        console.warn(`Error processing league ${leagueName}:`, innerErr.message);
+      } catch (leagueErr) {
+        console.warn(`Skipped league ${leagueId}:`, leagueErr.message);
       }
     }
 
-    allScorers.sort((a, b) => b.goals - a.goals);
-    const finalList = allScorers.slice(0, globalLimit);
+    // limit
+    if (results.length > limit) {
+      results = results.slice(0, limit);
+    }
 
-    // ✅ Store in cache
-    topScorersCache.set(cacheKey, finalList);
+    // save to cache
+    topScorersCache.set(cacheKey, results);
 
-    res.json(finalList);
+    return res.json(results);
 
   } catch (err) {
-    console.error("Error fetching global top scorers:", err);
-    res.status(500).json({ error: "Failed to fetch top scorers" });
+    console.error("❌ Topscorers backend error:", err.stack);
+    return res.status(500).json({
+      error: "Failed to fetch top scorers",
+      details: err.message,
+    });
   }
 };
 
 
-//get all leagues functin
+// Get the active league ID
 
 // cache for 10 minutes
 const leaguesCache = new NodeCache({ stdTTL: 500 }); 
@@ -182,7 +269,7 @@ exports.getLeagues = async (req, res) => {
       return res.status(500).json({ error: 'Invalid response structure for leagues' });
     }
 
-    // ✅ Set to cache
+    //Set to cache
     leaguesCache.set(cacheKey, data);
 
     res.json(data);
@@ -194,7 +281,7 @@ exports.getLeagues = async (req, res) => {
 
 
 
-// Controller 3: Get Standings (with cache)
+//league table for 5 team top beased on ranking
 
 const standingCache = new NodeCache({ stdTTL: 500 }); // cache for 10 minutes
 
@@ -237,62 +324,72 @@ exports.getTopStandings = async (req, res) => {
 
 // Function to fetch all matches with caching
 
-const allMatchesCache = new NodeCache({ stdTTL: 300 }); // cache for 5 minutes
+const allMatchesCache = new NodeCache({ stdTTL: 900 }); // cache for 5 minutes
 
-exports.getAllMatches = async (req, res) => {
-  const cacheKey = "allMatches_last14days";
+// Format YYYY-MM-DD
+const formatDate = (date) => date.toISOString().split("T")[0];
+
+// Fetch matches for ONE day (fast)
+async function fetchDay(date) {
+  const cacheKey = `day_${date}`;
   const cached = allMatchesCache.get(cacheKey);
+  if (cached) return cached;
 
-  if (cached) {
-    return res.json(cached);
-  }
-
-  const getTodayDate = (offsetDays) => {
-    const date = new Date();
-    date.setDate(date.getDate() + offsetDays);
-    return date.toISOString().split("T")[0];
-  };
+  const url = `https://apiv3.apifootball.com/?action=get_events&from=${date}&to=${date}&APIkey=${APIkey}&timezone=Europe/Berlin`;
 
   try {
-    const from = getTodayDate(-7);
-    const to = getTodayDate(7);
+    const res = await fetch(url, { timeout: 5000 });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    allMatchesCache.set(cacheKey, data);
+    return data;
+  } catch (e) {
+    return [];
+  }
+}
 
-    const response = await fetch(`https://apiv3.apifootball.com/?action=get_events&from=${from}&to=${to}&APIkey=${APIkey}`);
-    
-    if (!response.ok) {
-      const text = await response.text();
-      return res.status(502).json({ error: "Failed to fetch from API", details: text });
-    }
+exports.getAllMatches = async (req, res) => {
+  try {
+    const today = new Date();
+    const todayStr = formatDate(today);
 
-    const data = await response.json();
-
-    if (!Array.isArray(data)) {
-      return res.status(500).json({ error: "Unexpected API response format" });
-    }
+    // Fetch TODAY ONLY (fast!)
+    const todayMatches = await fetchDay(todayStr);
 
     const matchesData = {
-      live: data.filter(match => {
-        const status = match.match_status?.trim().toLowerCase();
-        return status === "live" || (parseInt(status) > 0 && parseInt(status) < 90);
+      live: todayMatches.filter(m => {
+        const s = m.match_status?.trim().toLowerCase();
+        return s === "live" || (parseInt(s) > 0 && parseInt(s) < 90);
       }),
-      highlight: data.filter(match => match.match_status === "Finished"),
-      upcoming: data.filter(match => match.match_status === "" || match.match_status == null),
+      highlight: todayMatches.filter(m => m.match_status === "Finished"),
+      upcoming: todayMatches.filter(m => !m.match_status),
     };
 
-    // ✅ Cache the result
-    allMatchesCache.set(cacheKey, matchesData);
-
+    // Return instantly
     res.json(matchesData);
-  } catch (error) {
-    console.error("Error fetching matches:", error);
+
+    // 🔥 Background: prefetch other days (non-blocking)
+    const datesToPrefetch = [];
+    for (let i = -7; i <= 7; i++) {
+      if (i !== 0) {
+        const d = new Date();
+        d.setDate(today.getDate() + i);
+        datesToPrefetch.push(formatDate(d));
+      }
+    }
+
+    datesToPrefetch.forEach(date => fetchDay(date)); // runs silently
+
+  } catch (err) {
     res.status(500).json({ error: "Failed to fetch match data" });
   }
 };
 
 
-//cntroller to get matches by date and cache
+//cntroller to get matches by date and cache 
 
-const matchesByDateCache = new NodeCache({ stdTTL: 300 }); // cache for 5 minutes
+const matchesByDateCache = new NodeCache({ stdTTL: 60 }); // cache for 1 minutes
 
 exports.getMatchesByDate = async (req, res) => {
   const { date } = req.query;
@@ -354,7 +451,7 @@ exports.getMatchesByDate = async (req, res) => {
 
 //function to load statistic
 
-const matchStatsCache = new NodeCache({ stdTTL: 300 }); // cache for 5 minutes
+const matchStatsCache = new NodeCache({ stdTTL: 60 }); // cache for 1 minutes
 
 exports.getMatchStatistics = async (req, res) => {
   const { matchId } = req.query;
@@ -392,10 +489,10 @@ exports.getMatchStatistics = async (req, res) => {
 };
 
 
-
 //functkion to det h2h
 const h2hCache = new NodeCache({ stdTTL: 600 }); // Cache duration: 10 minutes
 
+//function to det h2h
 exports.getH2HData = async (req, res) => {
   const { homeTeam, awayTeam } = req.query;
 
@@ -406,7 +503,7 @@ exports.getH2HData = async (req, res) => {
   const cacheKey = `h2h_${homeTeam}_${awayTeam}`;
   const cached = h2hCache.get(cacheKey);
   if (cached) {
-    return res.json({ matches: cached });
+    return res.json(cached);
   }
 
   try {
@@ -419,16 +516,17 @@ exports.getH2HData = async (req, res) => {
     }
 
     const data = await response.json();
-    const h2hArray = data.firstTeam_VS_secondTeam;
 
-    if (!Array.isArray(h2hArray)) {
-      return res.status(404).json({ error: 'No H2H data found' });
-    }
+    const result = {
+      h2h: data.firstTeam_VS_secondTeam || [],
+      homeLast: data.firstTeam_lastResults || [],
+      awayLast: data.secondTeam_lastResults || []
+    };
 
-    // ✅ Store result in cache
-    h2hCache.set(cacheKey, h2hArray);
+    //Cache
+    h2hCache.set(cacheKey, result);
 
-    res.json({ matches: h2hArray });
+    res.json(result);
   } catch (error) {
     console.error("H2H Fetch Error:", error);
     res.status(500).json({ error: 'Internal server error while fetching H2H data' });
@@ -436,10 +534,11 @@ exports.getH2HData = async (req, res) => {
 };
 
 
-//function to load standings
 
+//function to load standings
 const standingsCache = new NodeCache({ stdTTL: 300 }); // 5 minutes TTL
 
+// controller
 exports.getStandings = async (req, res) => {
   const { leagueId } = req.query;
 
@@ -451,7 +550,7 @@ exports.getStandings = async (req, res) => {
   const cached = standingsCache.get(cacheKey);
 
   if (cached) {
-    return res.json({ standings: cached });
+    return res.json({ leagueId, standings: cached }); //include leagueId
   }
 
   try {
@@ -460,33 +559,44 @@ exports.getStandings = async (req, res) => {
 
     if (!response.ok) {
       const text = await response.text();
-      return res.status(502).json({ error: "Failed to fetch standings", details: text });
+      return res.status(502).json({
+        leagueId,
+        error: "Failed to fetch standings",
+        details: text
+      });
     }
 
     const data = await response.json();
 
     if (!Array.isArray(data)) {
-       console.warn("⚠️ Invalid API response structure:", data);
-       standingsCache.set(cacheKey, []); // still cache empty to avoid repeated bad calls
-      return res.json({ standings: [] }); // ensure consistent response
-     }
+      console.warn("Invalid API response structure:", data);
+      standingsCache.set(cacheKey, []); 
+      return res.json({ leagueId, standings: [] }); //include leagueId
+    }
 
-     // ✅ Save to cache
-      standingsCache.set(cacheKey, data);
+    //Save to cache
+    standingsCache.set(cacheKey, data);
 
-      // ✅ Always return consistent shape
-    res.json({ standings: Array.isArray(data) ? data : [] });
+    //Always return consistent shape
+    res.json({ leagueId, standings: data });
 
   } catch (error) {
-    console.error("❌ Standings fetch error (backend):", error);
-    res.status(500).json({ error: "Server error fetching standings" });
+    console.error("Standings fetch error (backend):", error);
+    res.status(500).json({ leagueId, error: "Server error fetching standings" });
   }
 };
 
+async function safeJson(res) {
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`Invalid JSON response: ${text.slice(0, 200)}`);
+  }
+}
 
-
-// ✅ Fetch lineup and dynamically infer formation
-const lineupCache = new NodeCache({ stdTTL: 300 }); // 5 minutes cache
+//lineupController.js
+const lineupCache = new NodeCache({ stdTTL: 300 }); // 5 min cache
 
 exports.getLineups = async (req, res) => {
   const { matchId } = req.query;
@@ -497,42 +607,41 @@ exports.getLineups = async (req, res) => {
 
   const cacheKey = `lineup_${matchId}`;
   const cached = lineupCache.get(cacheKey);
-
   if (cached) {
-    return res.json({ lineup: cached });
+    return res.json(cached);
   }
 
   try {
-    const url = `https://apiv3.apifootball.com/?action=get_lineups&match_id=${matchId}&APIkey=${APIkey}`;
-    const response = await fetch(url);
+    // Fetch both endpoints in parallel
+    const [lineupRes, eventRes] = await Promise.all([
+      fetch(`https://apiv3.apifootball.com/?action=get_lineups&match_id=${matchId}&APIkey=${APIkey}`),
+      fetch(`https://apiv3.apifootball.com/?action=get_events&match_id=${matchId}&APIkey=${APIkey}`)
+    ]);
 
-    if (!response.ok) {
-      const text = await response.text();
-      return res.status(502).json({ error: "API response failed", details: text });
+    if (!lineupRes.ok || !eventRes.ok) {
+      return res.status(502).json({ error: "API response failed" });
     }
 
-    const data = await response.json();
+    const lineupData = await safeJson(lineupRes);
+    const eventData = await safeJson(eventRes);
 
-    if (!data || typeof data !== 'object') {
-      return res.status(500).json({ error: "Invalid API response" });
-    }
+    const lineup = lineupData[matchId]?.lineup || null;
+    const match = Array.isArray(eventData) ? eventData[0] : eventData[matchId];
 
-    const lineup = data[matchId]?.lineup || null;
+    const responsePayload = { lineup, match };
 
-    // ✅ Store in cache
-    lineupCache.set(cacheKey, lineup);
+    lineupCache.set(cacheKey, responsePayload);
 
-    res.json({ lineup });
-  } catch (error) {
-    console.error("❌ Error fetching lineups (backend):", error);
-    res.status(500).json({ error: "Failed to fetch lineups" });
+    res.json(responsePayload);
+  } catch (err) {
+    console.error("Error fetching lineups/events:", err);
+    res.status(500).json({ error: "Failed to fetch lineup data" });
   }
 };
 
 
-
-
-const predictionCache = new NodeCache({ stdTTL: 300 }); // cache for 5 min
+// prediction 
+const predictionCache = new NodeCache({ stdTTL: 300 });
 
 const getDateString = (offset = 0) => {
   const d = new Date();
@@ -540,60 +649,47 @@ const getDateString = (offset = 0) => {
   return d.toISOString().split("T")[0];
 };
 
-
-// Fetch and display predictions
 exports.getTodayPredictions = async (req, res) => {
-    const cacheKey = "todayPredictions";
-    const cached = predictionCache.get(cacheKey);
-    if (cached) return res.json(cached);
+  const cacheKey = "todayPredictions";
+  const cached = predictionCache.get(cacheKey);
+
+  if (cached) return res.json(cached);
 
   const today = getDateString();
 
   try {
-    const [oddsRes, eventsRes] = await Promise.all([
-      fetch(`https://apiv3.apifootball.com/?action=get_odds&from=${today}&to=${today}&APIkey=${APIkey}`),
-      fetch(`https://apiv3.apifootball.com/?action=get_events&from=${today}&to=${today}&APIkey=${APIkey}`)
-    ]);
+    const response = await fetch(
+      `https://apiv3.apifootball.com/?action=get_predictions&from=${today}&to=${today}&APIkey=${APIkey}`
+    );
 
-    const oddsData = await oddsRes.json();
-    const eventsData = await eventsRes.json();
+    const data = await response.json();
 
-    if (!Array.isArray(oddsData) || !Array.isArray(eventsData)) {
-      return res.status(500).json({ error: "Invalid API data" });
+    if (!Array.isArray(data)) {
+      console.error("Prediction API error:", data);
+      return res.status(500).json([]);
     }
 
-    const enriched = oddsData.map(oddMatch => {
-      const event = eventsData.find(ev => ev.match_id === oddMatch.match_id);
-      if (!event) return null;
+    const enriched = data.map(match => ({
+      match_id: match.match_id,
+      home: match.match_hometeam_name,
+      away: match.match_awayteam_name,
+      time: match.match_time,
+      status: match.match_status,
+      live: match.match_live,
+      league_name: match.league_name,
+      homeScore: match.match_hometeam_score,
+      awayScore: match.match_awayteam_score,
+      prob_home: parseFloat(match.prob_HW || 0),
+      prob_away: parseFloat(match.prob_AW || 0),
+      prob_draw: parseFloat(match.prob_D || 0)
+    }));
 
-      return {
-        match_id: oddMatch.match_id,
-        home: event.match_hometeam_name,
-        away: event.match_awayteam_name,
-        homeLogo: event.team_home_badge,
-        awayLogo: event.team_away_badge,
-        time: event.match_time,
-        league_name: event.league_name,
-        score: `${event.match_hometeam_score} - ${event.match_awayteam_score}`,
-        odd_1: parseFloat(oddMatch.odd_1),
-        odd_2: parseFloat(oddMatch.odd_2)
-      };
-    }).filter(Boolean);
+    predictionCache.set(cacheKey, enriched);
 
-     predictionCache.set(cacheKey, enriched);
-     res.json(enriched);
+    res.json(enriched);
 
   } catch (error) {
-    console.error("❌ Backend prediction error:", error);
-    res.status(500).json({ error: "Failed to fetch predictions" });
+    console.error("Backend prediction error:", error);
+    res.status(500).json([]);
   }
 };
-
-
-
-
-
-
-
-
-

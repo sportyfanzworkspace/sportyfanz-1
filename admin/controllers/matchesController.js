@@ -3,7 +3,7 @@ const fetch = require("node-fetch");
 const cache = require("../utils/cache/redisCache");
 require("dotenv").config();
 
-const API_KEY = process.env.FOOTBALL_API_KEY;
+const API_KEY = process.env.APIFOOTBALL_API_KEY;
 
 const baseUrl = `https://apiv3.apifootball.com`;
 
@@ -32,7 +32,7 @@ exports.getMatches = async (req, res) => {
   try {
     const url = `${baseUrl}/?action=get_events&from=${from}&to=${to}&APIkey=${API_KEY}`;
     const response = await fetch(url, {
-      headers: { 'Accept-Encoding': 'identity' } // Prevent gzip issues
+      headers: { 'Accept-Encoding': 'identity' }
     });
 
     const text = await response.text();
