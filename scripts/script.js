@@ -1,6 +1,6 @@
 const API_BASE = location.hostname === 'localhost'
   ? 'http://localhost:3000'
-  : 'https://production.sportyfanz.com';
+  : 'https://api.sportyfanz.com';
 
 
     // menu toggle button for sidebar for mobile view
@@ -1531,7 +1531,6 @@ async function fetchMatchVideo(matchId, homeTeam, awayTeam) {
 }
 
 
-
 // Function to display match details with video
 async function displayLiveMatch(matchId, category) {
     if (!matchesData[category] || matchesData[category].length === 0) {
@@ -1665,8 +1664,6 @@ async function displayLiveMatch(matchId, category) {
         document.head.appendChild(spinnerStyle);
     }
 }
-
-  
 
     // Function to update tab content dynamically
     function getTabContent(tab, match) {

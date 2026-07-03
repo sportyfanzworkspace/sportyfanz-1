@@ -10,7 +10,7 @@ const path = require("path");
 const imageProxyRoutes = require("../routes/imageProxy");
 const dashboardRoutes = require("../routes/dashboard");
 const leagueRoutes = require("../routes/leagueRoutes");
-const videoRoutes = require("../routes/videoRoutes");
+const videoRoutes = require("../routes/videoRoutes")
 const playerImageRoutes = require("../routes/playerImageRoutes");
 const { router: fetchnews, refreshNewsInBackground } = require("../routes/newsRoutes");
 
@@ -64,7 +64,7 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Configure Nodemailer
+
 // Nodemailer transporter
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
@@ -135,12 +135,11 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api", imageProxyRoutes);
 app.use("/api", dashboardRoutes);
 app.use("/api", leagueRoutes);
-app.use("/api/videos", videoRoutes);
 app.use("/api", playerImageRoutes);
 app.use("/api", fetchnews);
 app.use("/api", entityDatabase);
 app.use("/api/", apiLimiter);
-
+app.use("/api/videos", videoRoutes);
 
 //Health check
 app.get("/api/health", (req, res) => res.send("API is live."));
