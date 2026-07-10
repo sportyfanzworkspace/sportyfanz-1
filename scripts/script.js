@@ -342,7 +342,8 @@ function populateNewsSection(sectionId, newsList) {
 
   // ========== TRENDING ==========
   if (sectionId === 'trending-stories') {
-    container.innerHTML = newsList.map((item, index) => `
+    const trendingNews = newsList.slice(0, 5);
+    container.innerHTML = trendingNews.map((item, index) => `
       <div class="news-update" data-index="${index}" data-section="${sectionId}">
         <div class="news-container">
           <div class="news-image">${getImageHtml(item)}</div>
@@ -631,9 +632,6 @@ window.onpopstate = function (event) {
 };
 
 
-
-
-
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     const response = await fetch(`${API_BASE}/api/sports-summaries`);
@@ -836,20 +834,25 @@ async function getActiveLeagueId() {
 // Render the top 5 standings for a league
 async function fetchTopFourStandings(leagueId) {
   try {
-    const response = await fetch(`${API_BASE}/api/topstandings/${leagueId}`);
-    const data = await response.json();
-
+    const response = await fetch(`${API_BASE}/api/topstandings`);
     const leagueTableDemo = document.querySelector(".league-table-demo");
 
-    if (!Array.isArray(data) || data.length === 0) {
-      leagueTableDemo.innerHTML = `<p>No data available for this league.</p>`;
+    const result = await response.json();
+    console.log("Top standings response:", result);
+
+    if (
+      !result.standings ||
+      !Array.isArray(result.standings) ||
+      result.standings.length === 0
+    ) {
+      leagueTableDemo.innerHTML = `<p>No standings available.</p>`;
       return;
     }
 
-    const topFive = data.slice(0, 5);
+     const topFive = result.standings;
 
     let tableHTML = `
-      <h3 class="league-title">${topFive[0]?.league_name || "League Standings"}</h3>
+      <h3 class="league-title">${result.league} - ${result.group || ""}</h3>
       <div class="table-header">
         <span class="team-head">Team</span>
         <span class="stats-header">W</span>
@@ -895,8 +898,6 @@ async function fetchTopFourStandings(leagueId) {
   console.log("Using league ID:", activeLeagueId);
   fetchTopFourStandings(activeLeagueId);
 })();
-
-
 
 // middle hero banner header slider
 let currentIndex = 0;
@@ -2289,6 +2290,8 @@ let displayTime = "";
 
 // Define Top Leagues
 const TOP_LEAGUES = [
+  "World Cup",
+  "EPL",
   "Premier League",
   "La Liga",
   "Serie A",
@@ -2519,15 +2522,15 @@ form.addEventListener('submit', async (e) => {
 
           const textCont1 = document.querySelector(".text-cont1");
           const newsUpdate = document.querySelector(".news-update");
-          const textCont4 = document.querySelector(".text-cont4");
-          const prediction = document.querySelector(".prediction-container");
           const textCont = document.querySelector(".text-cont");
           const liveMatchDemo = document.querySelector(".live-match-demo");
+          const leagueTabletextCont = document.querySelector(".leagueTable-text-cont");
+          const leagueTableDemo = document.querySelector(".league-table-demo");
           const textCont3 = document.querySelector(".text-cont3");
           const slider = document.querySelector(".slider");
           const advertPodcast = document.querySelector(".advert");
-          const leagueTabletextCont = document.querySelector(".leagueTable-text-cont");
-          const leagueTableDemo = document.querySelector(".league-table-demo");
+          const textCont4 = document.querySelector(".text-cont4");
+          const prediction = document.querySelector(".prediction-container");
           const advert1Podcast = document.querySelector(".advert1");
           const newsPodcast = document.querySelector(".news-podcast");
            
@@ -2536,15 +2539,15 @@ form.addEventListener('submit', async (e) => {
           
           if (textCont1) parent.appendChild(textCont1);
           if (newsUpdate) parent.appendChild(newsUpdate);
-          if (textCont4) parent.appendChild(textCont4);
-          if (prediction) parent.appendChild(prediction);
           if (textCont) parent.appendChild(textCont);
           if (liveMatchDemo) parent.appendChild(liveMatchDemo);
+          if (leagueTabletextCont) parent.appendChild(leagueTabletextCont);
+          if (leagueTableDemo) parent.appendChild(leagueTableDemo);
           if (textCont3) parent.appendChild(textCont3);
           if (slider) parent.appendChild(slider);
           if (advertPodcast) parent.appendChild(advertPodcast);
-          if (leagueTabletextCont) parent.appendChild(leagueTabletextCont);
-          if (leagueTableDemo) parent.appendChild(leagueTableDemo);
+          if (textCont4) parent.appendChild(textCont4);
+          if (prediction) parent.appendChild(prediction);
           if (advert1Podcast) parent.appendChild(advert1Podcast);
           if (newsPodcast) parent.appendChild(newsPodcast);
       }

@@ -4,6 +4,21 @@ const NodeCache = require("node-cache");
 const cache = require('../utils/cache/redisCache');
 const playerImageMap = require('../utils/playerImageMap');
 
+function getCurrentSeason() {
+
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+
+    // Football season normally starts July/August
+    if(month >= 7){
+        return `${year}-${year + 1}`;
+    }
+
+    return `${year - 1}-${year}`;
+
+}
 
 const APIkey = process.env.APIFOOTBALL_API_KEY;
 
@@ -35,23 +50,303 @@ async function fetchRetry(url, retries = 3, timeout = 8000) {
 }
 
 
-// Display matches for live-match-demo
-const getMatchesCache = new NodeCache({ stdTTL: 60 });
+  // Display matches for live-match-demo
+  const getMatchesCache = new NodeCache({ stdTTL: 60 });
 
-exports.getMatches = async (req, res) => {
-  const { from, to } = req.query;
-  const limit = parseInt(req.query.limit) || 100;
+  let currentSeasonCache = getCurrentSeason();
+
+  const LEAGUE_PRIORITY = [
+    "World Cup",
+    "Champions League",
+    "Europa League",
+    "Conference League",
+    "Premier League",
+    "La Liga",
+    "Serie A",
+    "Bundesliga",
+    "Ligue 1",
+    "CAF Champions League",
+    "CAF Confederation Cup",
+    "NPFL",
+    "MLS",
+    "Saudi"
+];
+
+  function getLeagueRank(name = "") {
+    const league = name.toLowerCase();
+
+    const index = LEAGUE_PRIORITY.findIndex(item =>
+        league.includes(item.toLowerCase())
+    );
+
+    return index === -1 ? 999 : index;
+  }
+
+  const TOP_TEAMS = [
+
+    // England
+    "Manchester United",
+    "Manchester City",
+    "Liverpool",
+    "Arsenal",
+    "Chelsea",
+    "Tottenham",
+    "Newcastle United",
+
+    // Spain
+    "Real Madrid",
+    "Barcelona",
+    "Atletico Madrid",
+
+    // Italy
+    "Juventus",
+    "Inter",
+    "AC Milan",
+    "Napoli",
+    "Roma",
+
+    // Germany
+    "Bayern Munich",
+    "Borussia Dortmund",
+    "RB Leipzig",
+
+    // France
+    "PSG",
+    "Paris Saint-Germain",
+    "Marseille",
+    "Lyon",
+
+    // Europe
+    "Ajax",
+    "Benfica",
+    "Porto",
+
+    // Nigeria (NPFL)
+    "Enyimba",
+    "Rivers United",
+    "Remo Stars",
+    "Bendel Insurance",
+    "Shooting Stars",
+    "Kano Pillars",
+    "Heartland",
+    "Plateau United",
+    "Akwa United",
+    "Kwara United",
+    "Lobi Stars",
+    "Sunshine Stars",
+    "Nasarawa United",
+    "Abia Warriors",
+    "Bayelsa United",
+    "El-Kanemi Warriors",
+    "Ikorodu City",
+    "Niger Tornadoes",
+
+    // CAF Giants
+    "Al Ahly",
+    "Zamalek",
+    "Mamelodi Sundowns",
+    "Esperance",
+    "Wydad Casablanca",
+    "Raja Casablanca",
+    "TP Mazembe",
+    "ASEC Mimosas",
+
+    // World Cup Nations
+    "Brazil",
+    "Argentina",
+    "England",
+    "France",
+    "Germany",
+    "Spain",
+    "Portugal",
+    "Italy",
+    "Netherlands",
+    "Belgium",
+    "Nigeria",
+    "Senegal",
+    "Morocco",
+    "Egypt",
+    "Algeria",
+    "Cameroon",
+    "Ghana",
+    "South Africa",
+    "USA"
+];
+
+ function calculateMatchScore(match) {
+
+    let score = 0;
+
+    const home = (match.match_hometeam_name || "").toLowerCase();
+    const away = (match.match_awayteam_name || "").toLowerCase();
+    const league = (match.league_name || "").toLowerCase();
+
+    /* MATCH STATUS IMPORTANCE*/
+
+    const status = match.match_status;
+
+    // Live games are the most important
+    if (
+        status &&
+        status !== "Finished" &&
+        status !== "Not Started"
+    ) {
+        score += 120;
+    }
+
+    // Finished games still get some priority
+    if(status === "Finished"){
+        score += 10;
+    }
+
+
+
+    /* COMPETITION VALUE */
+    if(league.includes("world cup")){
+        score += 1000;
+    }
+
+    else if(league.includes("champions league")){
+        score += 900;
+    }
+
+    else if(league.includes("europa")){
+        score += 700;
+    }
+
+    else if(league.includes("premier league")){
+        score += 900;
+    }
+
+    else if(
+        league.includes("la liga") ||
+        league.includes("serie a") ||
+        league.includes("bundesliga")
+    ){
+        score += 700;
+    }
+
+    else if(league.includes("ligue 1")){
+        score += 650;
+    }
+
+    else if (league.includes("caf champions")) {
+    score += 600;
+    }
+
+    else if(
+        league.includes("npfl") ||
+        (league.includes("nigeria") && league.includes("premier"))
+    ){
+        score += 550;
+    }
+
+      /* BIG TEAM POPULARITY */
+       TOP_TEAMS.forEach(team=>{
+
+       const club = team.toLowerCase();
+        if(home.includes(club)){
+            score += 50;
+        }
+        if(away.includes(club)){
+            score += 50;
+        }
+    });
+
+    /* RIVALRY DETECTION */
+    const rivalries = [
+        [
+          "real madrid",
+          "barcelona"
+        ],
+
+        [
+          "manchester united",
+          "manchester city"
+        ],
+
+        [
+          "manchester united",
+          "liverpool"
+        ],
+
+        [
+          "arsenal",
+          "chelsea"
+        ],
+
+        [
+          "inter",
+          "milan"
+        ],
+
+        [
+          "juventus",
+          "inter"
+        ]
+    ];
+
+      rivalries.forEach(pair=>{
+        if(
+            (home.includes(pair[0]) &&
+             away.includes(pair[1]))
+             ||
+            (home.includes(pair[1]) &&
+             away.includes(pair[0]))
+        ){
+            score += 150;
+
+         }
+      });
+
+      /* GOAL / ACTION BOOST*/
+      const homeScore =
+        Number(match.match_hometeam_score || 0);
+
+      const awayScore =
+        Number(match.match_awayteam_score || 0);
+
+     if(homeScore > 0 || awayScore > 0){
+        score += 80;
+      }
+
+    /* CLOSE FINISH BOOST*/
+    if(
+        Math.abs(homeScore - awayScore) <= 1
+        &&
+        status !== "Finished"
+     ){
+        score += 40;
+     }
+    return score;
+  }
+
+  exports.getMatches = async (req, res) => {
+   const { from, to } = req.query;
+   const limit = parseInt(req.query.limit) || 15;
 
   if (!from || !to) {
     return res.status(400).json({ error: "Missing query parameters" });
   }
 
-  const cacheKey = `matches_${from}_${to}_${limit}`;
+  const season = getCurrentSeason();
+
+  if(season !== currentSeasonCache){
+
+    console.log(
+      "New season detected:",
+      season
+    );
+
+    getMatchesCache.flushAll();
+
+    currentSeasonCache = season;
+}
+  const cacheKey =`matches_${season}_${from}_${to}_${limit}`;
   const cached = getMatchesCache.get(cacheKey);
   if (cached) return res.json(cached);
 
   try {
-    //DIRECT MATCHES FETCH — No league loop
     const url = `https://apiv3.apifootball.com/?action=get_events&from=${from}&to=${to}&timezone=Europe/Berlin&APIkey=${APIkey}`;
     const response = await fetch(url);
 
@@ -69,16 +364,54 @@ exports.getMatches = async (req, res) => {
     if (!Array.isArray(data)) {
       return res.status(500).json({ error: "Invalid match data format" });
     }
-
-    // Sort by date/time
+    
+    // Sort matches by kickoff time first
     data.sort((a, b) => {
       const A = new Date(`${a.match_date}T${a.match_time}`);
       const B = new Date(`${b.match_date}T${b.match_time}`);
-      return A - B;
+     return A - B;
     });
 
-    // Apply limit
-    const result = data.slice(0, limit);
+  
+  // Pick the biggest match from each competition
+  const featuredMatches = [];
+  const groupedLeagues = {};
+
+
+  // Group matches by league
+  data.forEach(match => {
+
+    const league = match.league_name || "Other";
+
+    if(!groupedLeagues[league]){
+        groupedLeagues[league] = [];
+    }
+
+    groupedLeagues[league].push(match);
+
+});
+
+
+// Select highest rated match per league
+Object.keys(groupedLeagues).forEach(league => {
+    const matches = groupedLeagues[league];
+    matches.sort((a,b)=>{
+      return calculateMatchScore(b) - calculateMatchScore(a);
+    });
+    featuredMatches.push(matches[0]);
+});
+
+
+  // Sort featured matches by competition importance
+  featuredMatches.forEach(match => {
+    match.match_priority_score = calculateMatchScore(match);
+  });
+
+  featuredMatches.sort((a, b) =>
+    b.match_priority_score - a.match_priority_score
+  );
+
+  const result = featuredMatches.slice(0, limit);
 
     // Cache result
     getMatchesCache.set(cacheKey, result);
@@ -92,12 +425,15 @@ exports.getMatches = async (req, res) => {
 };
 
 
-// function to fetch top scorer
 
+let currentTopScorerSeason = getCurrentSeason();
+
+// function to fetch top scorer
 const topScorersCache = new NodeCache({ stdTTL: 60 });
 
 // --- CONFIG ---
 const leaguesToFetch = [
+  1, //World Cup
   152, //Premier League
   153, //Championship
   154, //League One
@@ -113,7 +449,6 @@ const leaguesToFetch = [
   3, //Champions League
   848, //Europa League
   23, //Europa Conference League
-  1, //World Cup
   4, //Euro Championship
   12, //CAF Champions League
   20, //Africa Cup of Nations
@@ -172,13 +507,22 @@ function getCurrentSeason() {
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
   return month >= 7 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+  
 }
 
 // MAIN ENDPOINT
 exports.getTopScorers = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 200;
+
     const season = getCurrentSeason();
+      if (season !== currentTopScorerSeason) {
+        console.log("New season detected. Clearing top scorers cache.");
+        topScorersCache.flushAll();
+
+       currentTopScorerSeason = season;
+      }
+    
     const cacheKey = `topscorers_${season}_${limit}`;
 
     // Serve cached version
@@ -191,36 +535,58 @@ exports.getTopScorers = async (req, res) => {
     let results = [];
 
     for (const leagueId of leaguesToFetch) {
-      try {
-        const url = `https://apiv3.apifootball.com/?action=get_topscorers&league_id=${leagueId}&season=${season}&APIkey=${APIkey}`;
+      const currentYear = new Date().getFullYear();
+
+        const seasonToUse =
+          leagueId === 1 ||   // World Cup
+          leagueId === 4 ||   // Euro
+          leagueId === 20     // AFCON
+           ? currentYear
+           : season;
+       try {
+        const url =
+          `https://apiv3.apifootball.com/?action=get_topscorers&league_id=${leagueId}&season=${seasonToUse}&APIkey=${APIkey}`;
         const data = await fetchRetry(url);
 
         if (!Array.isArray(data) || data.length === 0) continue;
 
         // sort by highest goals
-        data.sort((a, b) => b.goals - a.goals);
+        data.sort((a, b) => Number(b.goals) - Number(a.goals));
 
-        const highestGoals = parseInt(data[0].goals) || 0;
+        const highestGoals = Number(data[0].goals) || 0;
         if (highestGoals === 0) continue;
 
         // include ties
         const topPlayers = data.filter(
-          (p) => parseInt(p.goals) === highestGoals
+          (p) => Number(p.goals) === highestGoals
         );
 
         for (const p of topPlayers) {
           results.push({
+            priority: LEAGUE_PRIORITY[leagueId] || 0,
             league: leagueNames[leagueId] || "Unknown League",
             player: p.player_name,
             goals: highestGoals,
             team: truncateWords(p.team_name),
-            image: p.player_image,
+            image: p.player_image || ""
           });
         }
       } catch (leagueErr) {
         console.warn(`Skipped league ${leagueId}:`, leagueErr.message);
       }
     }
+
+    results.sort((a, b) => {
+
+      if (b.priority !== a.priority)
+         return b.priority - a.priority;
+
+      if (b.goals !== a.goals)
+         return b.goals - a.goals;
+
+      return a.player.localeCompare(b.player);
+
+     });
 
     // limit
     if (results.length > limit) {
@@ -283,20 +649,137 @@ exports.getLeagues = async (req, res) => {
 
 //league table for 5 team top beased on ranking
 
-const standingCache = new NodeCache({ stdTTL: 500 }); // cache for 10 minutes
+ const standingCache = new NodeCache({stdTTL: 600}); // cache for 10 minutes
 
-exports.getTopStandings = async (req, res) => {
-  const { leagueId } = req.params;
-  const cacheKey = `standings_${leagueId}`;
+ //standingCache.flushAll();
 
-  // Check cache
-  const cached = standingCache.get(cacheKey);
-  if (cached) {
-    return res.json(cached);
+  const FEATURED_LEAGUES = {
+    worldCup: {
+        id: 1,
+        name: "World Cup",
+        startMonth: 6,
+        endMonth: 7
+    },
+
+    premierLeague: {
+        id: 152,
+        name: "Premier League",
+        startMonth: 8,
+        endMonth: 5
+    },
+
+    npfl: {
+        id: 403,
+        name: "NPFL",
+        startMonth: 1,
+        endMonth: 12
+    }
+
+  };
+
+  function getWorldCupGroupStandings(group){
+
+    const groups = {
+
+        "Group A":[
+            {
+                country:"Mexico",
+                flag:"🇲🇽",
+                played:0,
+                won:0,
+                drawn:0,
+                lost:0,
+                goalsFor:0,
+                goalsAgainst:0,
+                points:0
+            },
+            {
+                country:"South Africa",
+                flag:"🇿🇦",
+                played:0,
+                won:0,
+                drawn:0,
+                lost:0,
+                goalsFor:0,
+                goalsAgainst:0,
+                points:0
+            },
+            {
+                country:"South Korea",
+                flag:"🇰🇷",
+                played:0,
+                won:0,
+                drawn:0,
+                lost:0,
+                goalsFor:0,
+                goalsAgainst:0,
+                points:0
+            },
+            {
+                country:"UEFA Playoff Winner",
+                flag:"🌍",
+                played:0,
+                won:0,
+                drawn:0,
+                lost:0,
+                goalsFor:0,
+                goalsAgainst:0,
+                points:0
+            }
+        ]
+
+    };
+
+
+    return groups[group] || [];
+
+}
+
+ function getFeaturedLeague(){
+
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = now.getMonth()+1;
+
+
+    // FIFA World Cup 2026
+    if(
+        year === 2026 &&
+        month >= 6 &&
+        month <= 7
+    ){
+
+        return FEATURED_LEAGUES.worldCup;
+
+    }
+    // Default football season
+    return FEATURED_LEAGUES.premierLeague;
   }
 
-  try {
-    const response = await fetch(`https://apiv3.apifootball.com/?action=get_standings&league_id=${leagueId}&APIkey=${APIkey}`);
+  exports.getTopStandings = async (req, res) => {
+    const featuredLeague = getFeaturedLeague();
+    const leagueId = featuredLeague.id;
+    const season = getCurrentSeason();
+    const currentYear = new Date().getFullYear();
+
+    const seasonToUse =
+    leagueId === 1
+        ? currentYear
+        : season;
+
+    const cacheKey = `standings_${featuredLeague.name}_${seasonToUse}`;
+
+    // Check cache
+    const cached = standingCache.get(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
+
+   try {
+     const response = await fetch(
+     `https://apiv3.apifootball.com/?action=get_standings&league_id=${leagueId}&season=${seasonToUse}&APIkey=${APIkey}`
+   );
     
     if (!response.ok) {
       const text = await response.text();
@@ -306,15 +789,39 @@ exports.getTopStandings = async (req, res) => {
     const data = await response.json();
 
     if (!Array.isArray(data) || data.length === 0) {
-      return res.status(404).json({ error: 'No standings data found.' });
+
+    if(featuredLeague.name === "World Cup"){
+
+    const standings =
+     await getWorldCupGroupStandings("Group A");
+
+
+     return res.json({
+      league:"World Cup",
+      group:"Group A",
+      standings
+    });
+    }
+
+     return res.status(404).json({
+        error: 'No standings data found.'
+     });
     }
 
     const topFive = data.slice(0, 5);
 
-    // Save to cache
-    standingCache.set(cacheKey, topFive);
+     // Save to cache
+     const result = {
+      league: featuredLeague.name,
+      leagueId: featuredLeague.id,
+      group: leagueId === 1 ? "Group A" : null,
+      season: seasonToUse,
+      standings: topFive
+     };
 
-    res.json(topFive);
+ standingCache.set(cacheKey, result);
+
+return res.json(result);
   } catch (error) {
     console.error("Error fetching standings:", error);
     res.status(500).json({ error: 'Internal server error' });

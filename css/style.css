@@ -545,7 +545,6 @@ img, iframe, ins {
    height: 10px;
 }
 
-
   .fulltime-text,
   .halftime-text,
   .live-time {
@@ -553,8 +552,6 @@ img, iframe, ins {
   }
   
   
-
-
 /* League Table Container */
 .league-table-demo {
     background: linear-gradient(180deg, #1b364e 25%, #244537 75%);
@@ -4803,15 +4800,15 @@ body.news-page .news-update {
     
     .text-cont1 { order: 2; }
     .news-update { order: 3; }
-    .text-cont4 { order: 4; }
-    .prediction-container { order: 5; }
-    .text-cont { order: 6; } 
-    .live-match-demo { order: 7; }  
+    .text-cont { order: 4; } 
+    .live-match-demo { order: 5; } 
+    .leagueTable-text-cont { order: 6; }
+    .league-table-demo { order: 7; } 
     .text-cont3 { order: 8; }
     .slider { order: 9; }
     .advert { order: 10; }
-    .leagueTable-text-cont { order: 11; }
-    .league-table-demo { order: 12; } 
+    .text-cont4 { order: 11; }
+    .prediction-container { order: 12; } 
     .advert1 { order: 13; }
     .news-podcast { order: 14; } 
     
